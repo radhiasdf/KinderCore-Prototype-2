@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spelling Bee Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fffbea;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+    .hexagon {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border: 2px solid #e0a106;
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 5px;
+      transition: background 0.3s;
+    }
+    .filled {
+      background: orange;
+      color: white;
+    }
+    .score-icon {
+      display: inline-flex;
+      align-items: center;
+      font-size: 1.2em;
+      margin-top: 1rem;
+    }
+    .score-icon svg {
+      fill: #e0a106;
+      width: 1.2em;
+      height: 1.2em;
+      margin-right: 0.3em;
+    }
+    .hex-container {
+      display: flex;
+      justify-content: center;
+      margin: 1em 0;
+      flex-wrap: wrap;
+    }
+    .fly {
+      animation: flyToScore 1s forwards;
+    }
+    @keyframes flyToScore {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
+    input[type="text"] {
+      font-size: 1.2em;
+      padding: 0.5em;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+    }
+    select, button {
+      margin-top: 1rem;
+      font-size: 1em;
+      padding: 0.4em 0.8em;
+    }
+    #highScore {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: #888;
+    }
+    #gameOver {
+      display: none;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    #gameOver h2 {
+      color: #c00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Spelling Bee Game</h1>
+  <p id="timer">Time: 60</p>
+  <div id="hintImage" style="font-size: 5rem;">🔤</div>
+  <div class="hex-container" id="hexContainer"></div>
+  <input type="text" id="wordInput" placeholder="Type the word..." />
+  <div class="score-icon">
+    <svg viewBox="0 0 24 24"><polygon points="12,2 22,9 22,21 12,22 2,21 2,9"/></svg>
+    <span id="score">0</span>
+  </div>
+  <div id="highScore">High Score: <span id="highScoreValue">0</span></div>
+  <select id="difficulty">
+    <option value="easy">Easy</option>
+    <option value="medium">Medium</option>
+    <option value="hard">Hard</option>
+  </select>
+  <button id="skipButton">Skip</button>
+
+  <div id="gameOver">
+    <h2>Game Over</h2>
+    <p>Your score: <span id="finalScore"></span></p>
+    <button onclick="restartGame()">Play Again</button>
+  </div>
+
+  <audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+
+  <script>
+    const words = [
+      { word: "apple", emoji: "🍎" }, { word: "banana", emoji: "🍌" }, { word: "cat", emoji: "🐱" },
+      { word: "dog", emoji: "🐶" }, { word: "car", emoji: "🚗" }, { word: "sun", emoji: "☀️" },
+      { word: "moon", emoji: "🌙" }, { word: "star", emoji: "⭐" }, { word: "fish", emoji: "🐟" },
+      { word: "book", emoji: "📚" }, { word: "milk", emoji: "🥛" }, { word: "fire", emoji: "🔥" },
+      { word: "cake", emoji: "🎂" }, { word: "gift", emoji: "🎁" }, { word: "rain", emoji: "🌧️" },
+      { word: "snow", emoji: "❄️" }, { word: "tree", emoji: "🌳" }, { word: "frog", emoji: "🐸" },
+      { word: "bird", emoji: "🐦" }, { word: "duck", emoji: "🦆" }, { word: "lion", emoji: "🦁" },
+      { word: "bear", emoji: "🐻" }, { word: "cow", emoji: "🐄" }, { word: "goat", emoji: "🐐" },
+      { word: "bike", emoji: "🚲" }, { word: "bus", emoji: "🚌" }, { word: "ship", emoji: "🚢" },
+      { word: "train", emoji: "🚆" }, { word: "plane", emoji: "✈️" }, { word: "watch", emoji: "⌚" },
+      { word: "phone", emoji: "📱" }, { word: "mouse", emoji: "🖱️" }, { word: "clock", emoji: "⏰" },
+      { word: "heart", emoji: "❤️" }, { word: "candy", emoji: "🍬" }, { word: "bread", emoji: "🍞" },
+      { word: "cheese", emoji: "🧀" }, { word: "egg", emoji: "🥚" }, { word: "pizza", emoji: "🍕" },
+      { word: "burger", emoji: "🍔" }, { word: "sushi", emoji: "🍣" }, { word: "cookie", emoji: "🍪" },
+      { word: "donut", emoji: "🍩" }, { word: "camera", emoji: "📷" }, { word: "tv", emoji: "📺" },
+      { word: "robot", emoji: "🤖" }, { word: "alien", emoji: "👽" }, { word: "crown", emoji: "👑" },
+      { word: "ghost", emoji: "👻" }, { word: "smile", emoji: "😊" }, { word: "laugh", emoji: "😂" },
+      { word: "angry", emoji: "😠" }, { word: "sad", emoji: "😢" }, { word: "sleep", emoji: "😴" },
+      { word: "chair", emoji: "🪑" }, { word: "bed", emoji: "🛏️" }, { word: "lamp", emoji: "💡" },
+      { word: "key", emoji: "🔑" }, { word: "lock", emoji: "🔒" }, { word: "pen", emoji: "🖊️" },
+      { word: "ruler", emoji: "📏" }, { word: "bag", emoji: "👜" }, { word: "shirt", emoji: "👕" },
+      { word: "pants", emoji: "👖" }, { word: "shoe", emoji: "👟" }, { word: "hat", emoji: "🎩" },
+      { word: "glove", emoji: "🧤" }, { word: "ring", emoji: "💍" }, { word: "soap", emoji: "🧼" },
+      { word: "tooth", emoji: "🦷" }, { word: "nail", emoji: "💅" }, { word: "hand", emoji: "✋" },
+      { word: "foot", emoji: "🦶" }, { word: "eye", emoji: "👁️" }, { word: "ear", emoji: "👂" },
+      { word: "nose", emoji: "👃" }, { word: "hair", emoji: "💇" }, { word: "head", emoji: "🧑" },
+      { word: "baby", emoji: "👶" }, { word: "mom", emoji: "👩" }, { word: "dad", emoji: "👨" },
+      { word: "family", emoji: "👨‍👩‍👧‍👦" }, { word: "teacher", emoji: "🧑‍🏫" }, { word: "doctor", emoji: "🧑‍⚕️" },
+      { word: "nurse", emoji: "👩‍⚕️" }, { word: "pilot", emoji: "👨‍✈️" }, { word: "chef", emoji: "👨‍🍳" },
+      { word: "farmer", emoji: "👩‍🌾" }, { word: "police", emoji: "👮" }, { word: "fireman", emoji: "👨‍🚒" },
+      { word: "clown", emoji: "🤡" }, { word: "dancer", emoji: "💃" }, { word: "singer", emoji: "🎤" },
+      { word: "artist", emoji: "🎨" }, { word: "writer", emoji: "✍️" }, { word: "king", emoji: "🤴" },
+      { word: "queen", emoji: "👸" }, { word: "prince", emoji: "👦" }, { word: "princess", emoji: "👧" }
+    ];
+
+
+    let score = 0;
+    let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+    let currentIndex = 0;
+    let timeLeft = 60;
+    let countdownInterval;
+
+    const hexContainer = document.getElementById('hexContainer');
+    const wordInput = document.getElementById('wordInput');
+    const scoreDisplay = document.getElementById('score');
+    const highScoreDisplay = document.getElementById('highScoreValue');
+    const timer = document.getElementById('timer');
+    const hintImage = document.getElementById('hintImage');
+    const correctSound = document.getElementById('correctSound');
+    const wrongSound = document.getElementById('wrongSound');
+    const difficultySelect = document.getElementById('difficulty');
+    const gameOverScreen = document.getElementById('gameOver');
+    const finalScoreDisplay = document.getElementById('finalScore');
+
+    highScoreDisplay.textContent = highScore;
+
+    function loadWord() {
+      let filteredWords = words.filter(w => {
+        const len = w.word.length;
+        if (difficultySelect.value === 'easy') return len <= 4;
+        if (difficultySelect.value === 'medium') return len > 4 && len <= 6;
+        return len > 6;
+      });
+      const random = Math.floor(Math.random() * filteredWords.length);
+      const { word, emoji } = filteredWords[random];
+      currentIndex = words.findIndex(w => w.word === word);
+      hintImage.textContent = emoji;
+      hexContainer.innerHTML = '';
+      for (let i = 0; i < word.length; i++) {
+        const hex = document.createElement('div');
+        hex.classList.add('hexagon');
+        hexContainer.appendChild(hex);
+      }
+    }
+
+    wordInput.addEventListener('input', () => {
+      const input = wordInput.value.toLowerCase();
+      const currentWord = words[currentIndex].word;
+      const hexes = hexContainer.children;
+      for (let i = 0; i < hexes.length; i++) {
+        hexes[i].textContent = input[i] ? input[i].toUpperCase() : '';
+        if (input[i]) hexes[i].classList.add('filled');
+        else hexes[i].classList.remove('filled');
+      }
+
+      if (input === currentWord) {
+        correctSound.play();
+        Array.from(hexes).forEach(hex => hex.classList.add('fly'));
+        setTimeout(() => {
+          score += input.length;
+          scoreDisplay.textContent = score;
+          if (score > highScore) {
+            highScore = score;
+            highScoreDisplay.textContent = highScore;
+            localStorage.setItem('highScore', highScore);
+          }
+          wordInput.value = '';
+          loadWord();
+        }, 1000);
+      } else if (input.length === currentWord.length && input !== currentWord) {
+        wrongSound.play();
+      }
+    });
+
+    document.getElementById('skipButton').addEventListener('click', () => {
+      wordInput.value = '';
+      loadWord();
+    });
+
+    function countdown() {
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        timer.textContent = `Time: ${timeLeft}`;
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      wordInput.disabled = true;
+      document.getElementById('skipButton').disabled = true;
+      gameOverScreen.style.display = 'block';
+      finalScoreDisplay.textContent = score;
+    }
+
+    function restartGame() {
+      score = 0;
+      timeLeft = 60;
+      wordInput.disabled = false;
+      document.getElementById('skipButton').disabled = false;
+      gameOverScreen.style.display = 'none';
+      wordInput.value = '';
+      scoreDisplay.textContent = 0;
+      timer.textContent = `Time: ${timeLeft}`;
+      loadWord();
+      countdown();
+    }
+
+    loadWord();
+    countdown();
+  </script>
+</body>
+</html>
+
+    
+    
+    
+    
+    
+    
