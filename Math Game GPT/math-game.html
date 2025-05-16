@@ -33,7 +33,14 @@
 <body>
   <div id="ui">
     <div id="question"></div>
-    <input type="number" id="answer" placeholder="Your answer" autofocus />
+    <input 
+      type="text" 
+      inputmode="numeric" 
+      pattern="[-]?[0-9]*" 
+      id="answer" 
+      placeholder="Your answer" 
+      autofocus 
+    />
     <div>Level: <span id="level">1</span> | Time: <span id="timer">60</span>s</div>
     <div id="feedback"></div>
   </div>
