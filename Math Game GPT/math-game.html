@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Tower Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+    }
+    canvas {
+      display: block;
+      background: linear-gradient(#87ceeb, #87ceeb);
+    }
+    #ui {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.8);
+      padding: 1em;
+      border-radius: 8px;
+      text-align: center;
+    }
+    input {
+      padding: 0.5em;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <div id="question"></div>
+    <input type="number" id="answer" placeholder="Your answer" autofocus />
+    <div>Level: <span id="level">1</span> | Time: <span id="timer">60</span>s</div>
+    <div id="feedback"></div>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script type="module" src="js/math-game.js"></script>
+
+
+  <script>
+    
+  </script>
+</body>
+</html>

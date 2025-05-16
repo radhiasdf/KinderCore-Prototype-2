@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Time Settings</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --light: #f9f9fb;
+      --gray: #6b7280;
+      --bg: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--light);
+      color: #111827;
+      padding: 20px;
+    }
+
+    h1 {
+      color: var(--primary);
+      text-align: center;
+    }
+
+    .app-item {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 4px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary);
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn:active {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Screen Time Settings</h1>
+
+  <div class="app-item">
+    <div class="app-header">
+      <strong>YouTube</strong>
+    </div>
+    <label for="youtubeLimit">Limit (minutes)</label>
+    <input type="number" id="youtubeLimit" min="0" step="5" />
+  </div>
+
+  <div class="app-item">
+    <div class="app-header">
+      <strong>Games</strong>
+    </div>
+    <label for="gamesLimit">Limit (minutes)</label>
+    <input type="number" id="gamesLimit" min="0" step="5" />
+  </div>
+
+  <button class="btn" onclick="saveSettings()">Save Settings</button>
+
+  <script>
+    // Load previous values if available
+    window.onload = function () {
+      document.getElementById('youtubeLimit').value = localStorage.getItem('limitYouTube') || 30;
+      document.getElementById('gamesLimit').value = localStorage.getItem('limitGames') || 20;
+    };
+
+    function saveSettings() {
+      const ytLimit = document.getElementById('youtubeLimit').value;
+      const gameLimit = document.getElementById('gamesLimit').value;
+
+      localStorage.setItem('limitYouTube', ytLimit);
+      localStorage.setItem('limitGames', gameLimit);
+
+      alert('Screen time settings saved!');
+    }
+  </script>
+</body>
+</html>

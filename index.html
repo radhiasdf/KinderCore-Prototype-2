@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Balance App</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --light: #f9f9fb;
+      --gray: #6b7280;
+      --bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--light);
+      color: #111827;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 16px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    section {
+      background-color: var(--bg);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      padding: 16px;
+    }
+
+    section h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .app-item, .game-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .score {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    .setup-modal {
+      position: fixed;
+      inset: 0;
+      background: white;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .age-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 0;
+    }
+
+    .age-number {
+      font-size: 2rem;
+      font-weight: bold;
+      width: 60px;
+      text-align: center;
+    }
+
+    input[type="text"], input[type="password"] {
+      padding: 10px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="setup-modal" id="setupModal">
+    <h2>Welcome!</h2>
+    <p>Select your child's learning age:</p>
+    <div class="age-controls">
+      <button class="btn" onclick="changeAge(-1)">◀</button>
+      <div class="age-number" id="ageDisplay">4</div>
+      <button class="btn" onclick="changeAge(1)">▶</button>
+    </div>
+
+    <p>Set your PIN (letters or numbers):</p>
+    <input type="text" id="pinInput" placeholder="Enter your PIN" />
+    <button class="btn" onclick="finishSetup()">Start</button>
+  </div>
+
+  <header>Balance: Learn & Play</header>
+
+  <div class="container">
+    <section>
+      <h2>Screen Time Controls</h2>
+      <div class="app-item">
+        <span>YouTube</span>
+        <span>Limit: 30 min</span>
+      </div>
+      <div class="app-item">
+        <span>Games</span>
+        <span>Limit: 20 min</span>
+      </div>
+      <button class="btn" onclick="openControls()">Manage Limits</button>
+    </section>
+
+    <section>
+      <h2>Learn</h2>
+      <div class="game-item">
+        <div>
+          <strong>Arithmetic Game</strong>
+          <div class="score" id="best-arithmetic-score">Best Score: --</div>
+        </div>
+        <div>
+          <button class="btn" onclick="startArithmeticGame()">Play</button>
+        </div>
+      </div>
+
+      <div class="game-item">
+        <div>
+          <strong>Spelling Bee</strong>
+          <div class="score" id="best-spelling-score">Best Score: --</div>
+        </div>
+        <div>
+          <button class="btn" onclick="startSpellingGame()">Play</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let age = 4;
+
+    function changeAge(delta) {
+      age = Math.max(4, Math.min(7, age + delta));
+      document.getElementById("ageDisplay").innerText = age;
+    }
+
+    function finishSetup() {
+      const pin = document.getElementById("pinInput").value.trim();
+      if (pin === "") {
+        alert("Please enter a PIN.");
+        return;
+      }
+      localStorage.setItem("childAge", age);
+      localStorage.setItem("parentPIN", pin);
+      document.getElementById("setupModal").classList.add("hidden");
+    }
+
+    function openControls() {
+      const entered = prompt("Enter your PIN to access controls:");
+      const saved = localStorage.getItem("parentPIN");
+      if (entered === saved) {
+        window.location.href = "screen-time-settings.html";
+      } else {
+        alert("Incorrect PIN.");
+      }
+    }
+
+    function startArithmeticGame() {
+      window.location.href = "Math Game GPT/math-game.html";
+    }
+
+    function startSpellingGame() {
+      window.location.href = "spelling-bee-game.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Only show setup on first visit
+      const pinSet = localStorage.getItem("parentPIN");
+      if (pinSet) {
+        document.getElementById("setupModal").classList.add("hidden");
+      }
+
+      const bestMath = localStorage.getItem("bestArithmetic");
+      if (bestMath) {
+        document.getElementById("best-arithmetic-score").innerText = `Best Score: ${bestMath}`;
+      }
+
+      const bestSpelling = localStorage.getItem("bestSpelling");
+      if (bestSpelling) {
+        document.getElementById("best-spelling-score").innerText = `Best Score: ${bestSpelling}`;
+      }
+    });
+  </script>
+</body>
+</html>
