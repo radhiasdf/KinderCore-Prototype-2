@@ -272,7 +272,7 @@ draw();
 startTimer();
 
 setInterval(() => {
-    if (tower.length > 15 && Math.random() < 0.1) {
+    if (tower.length > 15 && Math.random() < 0.5) {
     spawnShootingStar();
     }
     if (tower.length < 3 && Math.random() < 0.1) spawnCloud(); // 1% chance per frame
