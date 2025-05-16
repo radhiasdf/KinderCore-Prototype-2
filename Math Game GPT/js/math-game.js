@@ -1,3 +1,7 @@
+import { Firework } from './fireworks.js';
+
+
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -47,6 +51,14 @@ const sounds = {
 const stars = [];
 const shootingStars = [];
 const clouds = [];
+
+const fireworks = [];
+
+function triggerFirework() {
+  const x = Math.random() * canvas.width;
+  const y = Math.random() * canvas.height / 2;
+  fireworks.push(new Firework(x, y, canvas));
+}
 
 function spawnCloud() {
   const img = cloudImages[Math.floor(Math.random() * cloudImages.length)];
@@ -206,6 +218,12 @@ function draw() {
     // Ground (shift upward as tower grows)
     ctx.fillRect(0, canvas.height - 300 + verticalOffset, canvas.width, 300);
 
+    // Update and draw fireworks
+    fireworks.forEach(fw => {
+        fw.update();
+        fw.draw(ctx);
+    });
+
     // Tower
     const blockOverlap = 60;
     for (let i = 0; i < tower.length; i++) {
@@ -246,7 +264,7 @@ document.getElementById('answer').addEventListener('input', function () {
     if (score % 5 === 0) {
         level++;
         document.getElementById('level').textContent = level;
-        timeLeft += 10;
+        timeLeft += 10; 
     }
     document.getElementById('feedback').textContent = 'Correct!';
     addBlock();
@@ -272,8 +290,7 @@ draw();
 startTimer();
 
 setInterval(() => {
-    if (tower.length > 15 && Math.random() < 0.5) {
-    spawnShootingStar();
-    }
-    if (tower.length < 3 && Math.random() < 0.1) spawnCloud(); // 1% chance per frame
-}, 3000);  // every 3 seconds
+    if (tower.length > 15 && Math.random() < 0.2) spawnShootingStar();
+    if (tower.length < 3 && Math.random() < 0.1) spawnCloud();
+    if (tower.length > 15 && Math.random() < 0.2) triggerFirework();
+}, 1000);  // every second
