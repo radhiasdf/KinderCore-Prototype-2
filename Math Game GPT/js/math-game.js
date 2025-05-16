@@ -113,6 +113,10 @@ function generateQuestion() {
     let b = Math.floor(Math.random() * 10) + 1;
     if (op === '/') {
     a = a * b; // ensure division has whole result
+    }else if (op === '-' && a < b) {
+        let temp = a;
+        a = b;
+        b = temp;
     }
     const expr = `${a} ${op} ${b}`;
     const answer = Math.floor(eval(expr));
