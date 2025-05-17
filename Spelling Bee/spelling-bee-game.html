@@ -32,6 +32,18 @@
       background: orange;
       color: white;
     }
+    #highScore {
+      font-size: 1rem;
+      color: #888;
+    }
+    #gameOver {
+      display: none;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    #gameOver h2 {
+      color: #c00;
+    }
     .score-icon {
       display: inline-flex;
       align-items: center;
@@ -43,6 +55,11 @@
       width: 1.2em;
       height: 1.2em;
       margin-right: 0.3em;
+    }
+    #timer {
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
     }
     .hex-container {
       display: flex;
@@ -58,7 +75,7 @@
       100% { transform: translateY(-100px); opacity: 0; }
     }
     input[type="text"] {
-      font-size: 1.2em;
+      font-size: 1.3em;
       padding: 0.5em;
       width: 80%;
       max-width: 400px;
@@ -66,94 +83,64 @@
     }
     select, button {
       margin-top: 1rem;
-      font-size: 1em;
+      font-size: 1.3em;
       padding: 0.4em 0.8em;
     }
-    #highScore {
-      margin-top: 0.5rem;
-      font-size: 1rem;
-      color: #888;
-    }
-    #gameOver {
-      display: none;
-      text-align: center;
-      margin-top: 2rem;
-    }
-    #gameOver h2 {
-      color: #c00;
-    }
+
   </style>
 </head>
 <body>
   <h1>Spelling Bee Game</h1>
-  <p id="timer">Time: 60</p>
-  <div id="hintImage" style="font-size: 5rem;">🔤</div>
-  <div class="hex-container" id="hexContainer"></div>
-  <input type="text" id="wordInput" placeholder="Type the word..." />
-  <div class="score-icon">
-    <svg viewBox="0 0 24 24"><polygon points="12,2 22,9 22,21 12,22 2,21 2,9"/></svg>
-    <span id="score">0</span>
-  </div>
-  <div id="highScore">High Score: <span id="highScoreValue">0</span></div>
-  <select id="difficulty">
-    <option value="easy">Easy</option>
-    <option value="medium">Medium</option>
-    <option value="hard">Hard</option>
-  </select>
-  <button id="skipButton">Skip</button>
-
+   <div id="highScore">High Score: <span id="highScoreValue">0</span></div>
+  
   <div id="gameOver">
     <h2>Game Over</h2>
     <p>Your score: <span id="finalScore"></span></p>
     <button onclick="restartGame()">Play Again</button>
   </div>
 
-  <audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-  <audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+  <div style="display: flex; align-items: center; gap: 50px">
+    <div class="score-icon">
+      <svg viewBox="0 0 24 24"><polygon points="12,2 22,9 22,21 12,22 2,21 2,9"/></svg>
+      <span id="score">0</span>
+    </div>
+    <div class="score-icon">
+  ⏱️ <span id="timer">Time: 60</span>
+    </div>
+  </div>
+
+
+  <div id="hintImage" style="font-size: 5rem;">🔤</div>
+  <div class="hex-container" id="hexContainer"></div>
+  <input type="text" id="wordInput" placeholder="Type the word..." />
+  <button id="skipButton">Skip</button>
+
+  <select id="difficulty">
+    <option value="easy">Easy</option>
+    <option value="medium">Medium</option>
+    <option value="hard">Hard</option>
+  </select>
+  <!-- <select id="languageSelect">
+    <option value="en">English</option>
+    <option value="ar">العربية</option>
+  </select> -->
+
+  <div id="arabicKeyboard" class="keyboard" style="display: none;"></div>
+
+
+  <audio id="correctSound" src="correct-6033.mp3"></audio>
+
+  <script src="wordlist.js"></script>
 
   <script>
-    const words = [
-      { word: "apple", emoji: "🍎" }, { word: "banana", emoji: "🍌" }, { word: "cat", emoji: "🐱" },
-      { word: "dog", emoji: "🐶" }, { word: "car", emoji: "🚗" }, { word: "sun", emoji: "☀️" },
-      { word: "moon", emoji: "🌙" }, { word: "star", emoji: "⭐" }, { word: "fish", emoji: "🐟" },
-      { word: "book", emoji: "📚" }, { word: "milk", emoji: "🥛" }, { word: "fire", emoji: "🔥" },
-      { word: "cake", emoji: "🎂" }, { word: "gift", emoji: "🎁" }, { word: "rain", emoji: "🌧️" },
-      { word: "snow", emoji: "❄️" }, { word: "tree", emoji: "🌳" }, { word: "frog", emoji: "🐸" },
-      { word: "bird", emoji: "🐦" }, { word: "duck", emoji: "🦆" }, { word: "lion", emoji: "🦁" },
-      { word: "bear", emoji: "🐻" }, { word: "cow", emoji: "🐄" }, { word: "goat", emoji: "🐐" },
-      { word: "bike", emoji: "🚲" }, { word: "bus", emoji: "🚌" }, { word: "ship", emoji: "🚢" },
-      { word: "train", emoji: "🚆" }, { word: "plane", emoji: "✈️" }, { word: "watch", emoji: "⌚" },
-      { word: "phone", emoji: "📱" }, { word: "mouse", emoji: "🖱️" }, { word: "clock", emoji: "⏰" },
-      { word: "heart", emoji: "❤️" }, { word: "candy", emoji: "🍬" }, { word: "bread", emoji: "🍞" },
-      { word: "cheese", emoji: "🧀" }, { word: "egg", emoji: "🥚" }, { word: "pizza", emoji: "🍕" },
-      { word: "burger", emoji: "🍔" }, { word: "sushi", emoji: "🍣" }, { word: "cookie", emoji: "🍪" },
-      { word: "donut", emoji: "🍩" }, { word: "camera", emoji: "📷" }, { word: "tv", emoji: "📺" },
-      { word: "robot", emoji: "🤖" }, { word: "alien", emoji: "👽" }, { word: "crown", emoji: "👑" },
-      { word: "ghost", emoji: "👻" }, { word: "smile", emoji: "😊" }, { word: "laugh", emoji: "😂" },
-      { word: "angry", emoji: "😠" }, { word: "sad", emoji: "😢" }, { word: "sleep", emoji: "😴" },
-      { word: "chair", emoji: "🪑" }, { word: "bed", emoji: "🛏️" }, { word: "lamp", emoji: "💡" },
-      { word: "key", emoji: "🔑" }, { word: "lock", emoji: "🔒" }, { word: "pen", emoji: "🖊️" },
-      { word: "ruler", emoji: "📏" }, { word: "bag", emoji: "👜" }, { word: "shirt", emoji: "👕" },
-      { word: "pants", emoji: "👖" }, { word: "shoe", emoji: "👟" }, { word: "hat", emoji: "🎩" },
-      { word: "glove", emoji: "🧤" }, { word: "ring", emoji: "💍" }, { word: "soap", emoji: "🧼" },
-      { word: "tooth", emoji: "🦷" }, { word: "nail", emoji: "💅" }, { word: "hand", emoji: "✋" },
-      { word: "foot", emoji: "🦶" }, { word: "eye", emoji: "👁️" }, { word: "ear", emoji: "👂" },
-      { word: "nose", emoji: "👃" }, { word: "hair", emoji: "💇" }, { word: "head", emoji: "🧑" },
-      { word: "baby", emoji: "👶" }, { word: "mom", emoji: "👩" }, { word: "dad", emoji: "👨" },
-      { word: "family", emoji: "👨‍👩‍👧‍👦" }, { word: "teacher", emoji: "🧑‍🏫" }, { word: "doctor", emoji: "🧑‍⚕️" },
-      { word: "nurse", emoji: "👩‍⚕️" }, { word: "pilot", emoji: "👨‍✈️" }, { word: "chef", emoji: "👨‍🍳" },
-      { word: "farmer", emoji: "👩‍🌾" }, { word: "police", emoji: "👮" }, { word: "fireman", emoji: "👨‍🚒" },
-      { word: "clown", emoji: "🤡" }, { word: "dancer", emoji: "💃" }, { word: "singer", emoji: "🎤" },
-      { word: "artist", emoji: "🎨" }, { word: "writer", emoji: "✍️" }, { word: "king", emoji: "🤴" },
-      { word: "queen", emoji: "👸" }, { word: "prince", emoji: "👦" }, { word: "princess", emoji: "👧" }
-    ];
-
 
     let score = 0;
     let highScore = parseInt(localStorage.getItem('highScore')) || 0;
     let currentIndex = 0;
     let timeLeft = 60;
     let countdownInterval;
+    let currentLanguage = "en";
+
 
     const hexContainer = document.getElementById('hexContainer');
     const wordInput = document.getElementById('wordInput');
@@ -166,6 +153,9 @@
     const difficultySelect = document.getElementById('difficulty');
     const gameOverScreen = document.getElementById('gameOver');
     const finalScoreDisplay = document.getElementById('finalScore');
+
+      const arabicLetters = "ضصثقفغعهخحجدشسيبلاتنمكطئءؤرلاىةوزظ".split("");
+
 
     highScoreDisplay.textContent = highScore;
 
@@ -217,6 +207,21 @@
       }
     });
 
+    // document.getElementById("languageSelect").addEventListener("change", (e) => {
+    //   currentLanguage = e.target.value;
+    //   loadNewWord(); // re-pick word from selected language
+    // });
+
+    // languageSelect.addEventListener("change", (e) => {
+    //   currentLanguage = e.target.value;
+    //   if (currentLanguage === "ar") {
+    //     arabicKeyboard.style.display = "block";
+    //     generateArabicKeyboard();
+    //   } else {
+    //     arabicKeyboard.style.display = "none";
+    //   }
+    // });
+
     document.getElementById('skipButton').addEventListener('click', () => {
       wordInput.value = '';
       loadWord();
@@ -252,6 +257,19 @@
       loadWord();
       countdown();
     }
+
+    function generateArabicKeyboard() {
+      const container = document.getElementById("arabicKeyboard");
+      container.innerHTML = '';
+      arabicLetters.forEach(letter => {
+        const btn = document.createElement("button");
+        btn.textContent = letter;
+        btn.onclick = () => {
+          inputBox.value += letter;
+        };
+        container.appendChild(btn);
+      });
+}
 
     loadWord();
     countdown();
