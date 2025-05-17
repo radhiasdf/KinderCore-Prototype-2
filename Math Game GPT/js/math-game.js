@@ -13,6 +13,8 @@ let level = 1;
 let timeLeft = 60;
 let interval;
 let score = 0;
+let verticalOffset = 0; // total stack height
+
 
 const blockImageURLs = [
     'https://raw.githubusercontent.com/radhiasdf/Math-Tower-Game/refs/heads/main/cropped_image_1.png',
@@ -78,7 +80,8 @@ function generateStars(count = 50) {
     stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 1.5 + 0.5
+        radius: Math.random() * 1.5 + 0.5,
+        alpha: 0
     });
     }
 }
@@ -119,23 +122,39 @@ function lerpColor(a, b, t) {
 }
 
 function generateQuestion() {
-    const ops = ['+', '-', '*', '/'];
-    const op = ops[Math.floor(Math.random() * ops.length)];
-    let a = Math.floor(Math.random() * 10) + 1;
-    let b = Math.floor(Math.random() * 10) + 1;
-    if (op === '/') {
+  const difficulty = document.getElementById('difficulty').value;
+  let a, b, ops;
+
+  if (difficulty === 'easy') {
+    a = Math.floor(Math.random() * 10) + 1;
+    b = Math.floor(Math.random() * 10) + 1;
+    ops = ['+', '-'];
+  } else if (difficulty === 'medium') {
+    a = Math.floor(Math.random() * 10) + 1;
+    b = Math.floor(Math.random() * 10) + 1;
+    ops = ['+', '-', '*', '/'];
+  } else if (difficulty === 'hard') {
+    a = Math.floor(Math.random() * 20) + 1;
+    b = Math.floor(Math.random() * 20) + 1;
+    ops = ['+', '-', '*', '/'];
+  }
+
+  const op = ops[Math.floor(Math.random() * ops.length)];
+  if (op === '/') {
     a = a * b; // ensure division has whole result
     }else if (op === '-' && a < b) {
-        let temp = a;
+        let temp = a; // no negative number answer
         a = b;
         b = temp;
     }
-    const expr = `${a} ${op} ${b}`;
-    const answer = Math.floor(eval(expr));
-    question = { text: expr, answer };
-    document.getElementById('question').textContent = `What is ${expr}?`;
-    document.getElementById('answer').value = '';
+
+  const expr = `${a} ${op} ${b}`;
+  const answer = Math.floor(eval(expr)); // safe since it's generated
+  question = { text: expr, answer };
+  document.getElementById('question').textContent = `What is ${expr}?`;
+  document.getElementById('answer').value = '';
 }
+
 
 function addBlock() {
     const image = blockImages[Math.floor(Math.random() * blockImages.length)];
@@ -145,7 +164,7 @@ function addBlock() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const verticalOffset = Math.max(0, (tower.length - 1) * 60); // total stack height
+    verticalOffset = Math.max(0, (tower.length - 1) * 60); // total stack height
 
     // Sky color
     const maxBlocks = 30;  // max tower height before full darkness
@@ -162,19 +181,26 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Stars
-    if (tower.length > 15) {
-    if (!starsGenerated) {
+    if (tower.length > 15 && !starsGenerated) {
         generateStars(50);
         starsGenerated = true;
     }
 
-    for (const star of stars) {
-        ctx.fillStyle = 'white';
+    let skyFadeFactor = 0;
+
+    if (tower.length > 15) {
+        skyFadeFactor = Math.min((tower.length - 15) / 15, 1); // 0 to 1 as height goes 15→30
+    }
+
+    stars.forEach(star => {
+        star.alpha = skyFadeFactor;
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.arc(star.x, star.y, 1.5, 0, Math.PI * 2);
         ctx.fill();
-    }
-    }
+    });
+
     
     const fadeCountdown = 5;
     // Shooting Star
@@ -216,7 +242,7 @@ function draw() {
     // Ground
     ctx.fillStyle = '#90ee90';
     // Ground (shift upward as tower grows)
-    ctx.fillRect(0, canvas.height - 300 + verticalOffset, canvas.width, 300);
+    ctx.fillRect(0, 200 + verticalOffset, canvas.width, canvas.height);
 
     // Update and draw fireworks
     fireworks.forEach(fw => {
@@ -228,8 +254,8 @@ function draw() {
     const blockOverlap = 60;
     for (let i = 0; i < tower.length; i++) {
     ctx.fillStyle = tower[i].color;
-    const x = canvas.width / 2 - 25; // centre of page
-    const y = canvas.height - 350 - i * blockOverlap + verticalOffset;
+    const x = canvas.width / 2 - 50; // centre of page
+    const y = 170 - i * blockOverlap + verticalOffset;
 
     if (tower[i].image.complete) {
         ctx.drawImage(tower[i].image, x, y, 100, 100);
@@ -243,18 +269,29 @@ function draw() {
 }
 
 function startTimer() {
-    interval = setInterval(() => {
+  interval = setInterval(() => {
     timeLeft--;
     document.getElementById('timer').textContent = timeLeft;
+
     if (timeLeft <= 0) {
-        clearInterval(interval);
-        alert(`Game Over! You reached level ${level}. Tower height: ${tower.length}`);
-        const best = Math.max(tower.length, parseInt(localStorage.getItem('mathTowerScore') || '0'));
-        localStorage.setItem('mathTowerScore', JSON.stringify({ level, blocks: best }));
-        location.reload();
+      clearInterval(interval);
+      alert(`Game Over! You reached level ${level}. Tower height: ${tower.length}`);
+      
+      const difficulty = document.getElementById('difficulty').value;
+      const save = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+      const prev = save[difficulty] || { level: 0, blocks: 0 };
+
+      const newBlocks = Math.max(tower.length, prev.blocks);
+      const newLevel = Math.max(level, prev.level);
+
+      save[difficulty] = { level: newLevel, blocks: newBlocks };
+      localStorage.setItem('mathTowerScores', JSON.stringify(save));
+
+      init();
     }
-    }, 1000);
+  }, 1000);
 }
+
 
 document.getElementById('answer').addEventListener('input', function () {
     const val = parseInt(this.value);
@@ -273,24 +310,64 @@ document.getElementById('answer').addEventListener('input', function () {
 });
 
 function loadProgress() {
-    const save = JSON.parse(localStorage.getItem('mathTowerScore'));
-    if (save) {
-    alert(`Welcome back! Your best is level ${save.level}, height ${save.blocks}`);
+  let scores = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+
+  // Legacy support: convert old format if present
+  const old = localStorage.getItem('mathTowerScore');
+  if (old) {
+    const oldData = JSON.parse(old);
+    scores['medium'] = {
+      level: oldData.level || 1,
+      blocks: oldData.blocks || 0
+    };
+    localStorage.setItem('mathTowerScores', JSON.stringify(scores));
+    localStorage.removeItem('mathTowerScore');
+  }
+
+  const entries = Object.entries(scores);
+  if (entries.length > 0) {
+    const parts = entries.map(([difficulty, data]) => 
+      `${difficulty[0].toUpperCase() + difficulty.slice(1)}: level ${data.level}, height ${data.blocks}`
+    );
+    alert(`Welcome back!\nBest scores:\n${parts.join('\n')}`);
+  }
+}
+
+function init() {
+  tower = [];
+  verticalOffset = 0;
+  level = 1;
+  timeLeft = 60;
+  score = 0;
+  question = {};
+
+  document.getElementById('level').textContent = level;
+  document.getElementById('timer').textContent = timeLeft;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('answer').value = '';
+
+  
+  generateQuestion();
+  addBlock();
+  for (let i=0; i< 15; i++){
+    spawnCloud();
     }
+    clearInterval(interval);
+    startTimer();
 }
 
 // Init
 loadProgress();
-generateQuestion();
-addBlock();
-for (let i=0; i< 15; i++){
-    spawnCloud();
-}
+init();
+
+document.getElementById('difficulty').addEventListener('change', () => {
+  init();
+});
+
 draw();
-startTimer();
 
 setInterval(() => {
-    if (tower.length > 15 && Math.random() < 0.2) spawnShootingStar();
     if (tower.length < 3 && Math.random() < 0.1) spawnCloud();
-    if (tower.length > 15 && Math.random() < 0.2) triggerFirework();
+    if (tower.length > 15 && tower.length < 40 && Math.random() < 0.2) triggerFirework();
+    if (tower.length > 20 && Math.random() < 0.1) spawnShootingStar();
 }, 1000);  // every second
