@@ -158,7 +158,7 @@ function generateQuestion() {
 
 function addBlock() {
     const image = blockImages[Math.floor(Math.random() * blockImages.length)];
-    tower.push({ image });
+    tower.push({ image, scale: 0 });
 }
 
 function draw() {
@@ -253,16 +253,33 @@ function draw() {
     // Tower
     const blockOverlap = 60;
     for (let i = 0; i < tower.length; i++) {
-    ctx.fillStyle = tower[i].color;
-    const x = canvas.width / 2 - 50; // centre of page
+    const block = tower[i];
+    const x = canvas.width / 2 - 50;
     const y = 170 - i * blockOverlap + verticalOffset;
 
-    if (tower[i].image.complete) {
-        ctx.drawImage(tower[i].image, x, y, 100, 100);
+    // Animate scale if not fully visible yet
+    if (block.scale < 1) {
+        block.scale += 0.1; // You can tweak this for slower/smoother animation
+        if (block.scale > 1) block.scale = 1;
+    }
+
+    const scale = block.scale || 1;
+
+    ctx.save();
+
+    // Move the origin to the center of the block
+    ctx.translate(x + 50, y + 50);
+    ctx.scale(scale, scale);
+    ctx.translate(-50, -50); // Return to top-left for image drawing
+
+    if (block.image.complete) {
+        ctx.drawImage(block.image, 0, 0, 100, 100);
     } else {
         ctx.fillStyle = 'gray';
-        ctx.fillRect(x, y, 100, 100);
+        ctx.fillRect(0, 0, 100, 100);
     }
+
+    ctx.restore();
     }
 
     requestAnimationFrame(draw);
