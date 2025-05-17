@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EVFVLJGQ9Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-EVFVLJGQ9Y');
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Math Tower Game</title>
@@ -36,8 +46,7 @@
       font-size: 1em;
     }
     #difficulty-container {
-      position: fixed;
-      bottom: 20px;
+      position: relative;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(255, 255, 255, 0.8);
@@ -55,7 +64,18 @@
   </style>
 </head>
 <body>
+    
+
   <div id="ui">
+
+    <div style="padding-bottom: 5px">
+       <select id="difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium" selected>Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+    </div>
+    
     <div id="question"></div>
     <input 
       type="text" 
@@ -70,14 +90,7 @@
     </div>
   </div>
 
-  <div id="difficulty-container">
-    <label for="difficulty">Difficulty:</label>
-    <select id="difficulty">
-      <option value="easy">Easy</option>
-      <option value="medium">Medium</option>
-      <option value="hard">Hard</option>
-    </select>
-  </div>
+
 
   <canvas id="gameCanvas"></canvas>
 

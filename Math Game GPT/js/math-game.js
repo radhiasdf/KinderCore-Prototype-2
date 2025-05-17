@@ -320,7 +320,7 @@ document.getElementById('answer').addEventListener('input', function () {
         document.getElementById('level').textContent = level;
         timeLeft += 10; 
     }
-    document.getElementById('feedback').textContent = 'Correct!';
+    //document.getElementById('feedback').textContent = 'Correct!';
     addBlock();
     generateQuestion();
     } 
@@ -348,6 +348,10 @@ function loadProgress() {
     );
     alert(`Welcome back!\nBest scores:\n${parts.join('\n')}`);
   }
+
+  const savedDifficulty = localStorage.getItem("selectedDifficulty");
+  const select = document.getElementById("difficulty");
+  select.value = savedDifficulty || "medium"; // default to medium
 }
 
 function init() {
@@ -377,7 +381,9 @@ function init() {
 loadProgress();
 init();
 
-document.getElementById('difficulty').addEventListener('change', () => {
+document.getElementById('difficulty').addEventListener('change', (e) => {
+    const selectedDifficulty = e.target.value;
+    localStorage.setItem("selectedDifficulty", selectedDifficulty);
   init();
 });
 
