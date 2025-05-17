@@ -250,7 +250,7 @@ function draw() {
         fw.draw(ctx);
     });
 
-    // Tower
+    ///////////////////////////////////////////// Tower
     const blockOverlap = 60;
     for (let i = 0; i < tower.length; i++) {
     const block = tower[i];
