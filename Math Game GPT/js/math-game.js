@@ -6,6 +6,8 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+/////////////////////////// GLOBAL VARS //////////////////////////
+
 let tower = [];
 let question = {};
 let level = 1;
@@ -13,6 +15,8 @@ let timeLeft = 60;
 let interval;
 let score = 0;
 let verticalOffset = 0; // total stack height
+let gameOver = true;
+
 
 ////////////////////////////// ART/EFFECTS ////////////////////
 
@@ -263,6 +267,8 @@ function addBlock() {
 }
 
 document.getElementById('answer').addEventListener('input', function () {
+    if (gameOver) return;
+
     const val = parseInt(this.value);
     if (val === question.answer) {
     sounds.correct.play();
@@ -280,12 +286,14 @@ document.getElementById('answer').addEventListener('input', function () {
 ///////////////////////// GAME OVER //////////////////////////
 
 function startTimer() {
+  gameOver = false;
   interval = setInterval(() => {
     timeLeft--;
     document.getElementById('timer').textContent = timeLeft;
 
     if (timeLeft <= 0) {
       clearInterval(interval);
+      gameOver = true;
 
       // Hide the canvas and show the game over screen
       //canvas.style.display = 'none';
@@ -339,7 +347,7 @@ function loadProgress() {
   }
 
   const entries = Object.entries(scores);
-  if (entries.length > 0) {
+  //if (entries.length > 0) {
   const parts = entries.map(([difficulty, data]) =>
     `<strong>${difficulty[0].toUpperCase() + difficulty.slice(1)}</strong>: Level ${data.level}, Height ${data.blocks}`
   );
@@ -349,7 +357,7 @@ function loadProgress() {
   document.getElementById('welcomeCloseButton').onclick = () => {
     document.getElementById('welcomeOverlay').style.display = 'none';
   };
-}
+//}
 
   const savedDifficulty = localStorage.getItem("selectedDifficulty");
   const select = document.getElementById("difficulty");
@@ -383,6 +391,7 @@ function reset() {
 // load, setstage, start timer
 loadProgress();
 reset();
+draw();
 
 document.getElementById('welcomeCloseButton').addEventListener('click', startTimer);
 
@@ -394,8 +403,6 @@ document.getElementById('difficulty').addEventListener('change', (e) => {
   reset();
   startTimer();
 });
-
-draw();
 
 setInterval(() => {
     if (tower.length < 3 && Math.random() < 0.1) cloudManager.spawnCloud();
