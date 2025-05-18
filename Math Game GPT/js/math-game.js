@@ -1,3 +1,4 @@
+import { CloudManager } from './cloud.js';
 import { Firework } from './fireworks.js';
 
 const canvas = document.getElementById('gameCanvas');
@@ -12,6 +13,10 @@ let timeLeft = 60;
 let interval;
 let score = 0;
 let verticalOffset = 0; // total stack height
+
+////////////////////////////// ART/EFFECTS ////////////////////
+
+const cloudManager = new CloudManager(canvas.width, canvas.height);
 
 
 const blockImageURLs = [
@@ -28,29 +33,12 @@ blockImageURLs.forEach(url => {
     blockImages.push(img);
 });
 
-const cloudImageURLs = [
-  'https://raw.githubusercontent.com/radhiasdf/Math-Tower-Game/refs/heads/main/Untitled75_20250516104823.png',
-  'https://raw.githubusercontent.com/radhiasdf/Math-Tower-Game/refs/heads/main/Untitled75_20250516104827.png',
-  'https://raw.githubusercontent.com/radhiasdf/Math-Tower-Game/refs/heads/main/Untitled75_20250516104829.png',
-  'https://raw.githubusercontent.com/radhiasdf/Math-Tower-Game/refs/heads/main/Untitled75_20250516104831.png',
-  'https://raw.githubusercontent.com/radhiasdf/Math-Tower-Game/refs/heads/main/Untitled75_20250516104833.png',
-  'https://raw.githubusercontent.com/radhiasdf/Math-Tower-Game/refs/heads/main/Untitled75_20250516104835.png',
-];
-
-const cloudImages = [];
-cloudImageURLs.forEach(url => {
-    const img = new Image();
-    img.src = url;
-    cloudImages.push(img);
-});
-
 const sounds = {
     correct: new Audio('https://freesound.org/data/previews/256/256113_3263906-lq.mp3'),
 };
 
 const stars = [];
 const shootingStars = [];
-const clouds = [];
 
 const fireworks = [];
 
@@ -58,18 +46,6 @@ function triggerFirework() {
   const x = Math.random() * canvas.width;
   const y = Math.random() * canvas.height / 2;
   fireworks.push(new Firework(x, y, canvas));
-}
-
-function spawnCloud() {
-  const img = cloudImages[Math.floor(Math.random() * cloudImages.length)];
-  const size = 100 + Math.random() * 100;
-  clouds.push({
-    x: Math.random() * canvas.width,
-    y: -Math.random() * (canvas.height / 2),
-    speed: 0.01 + Math.random() * 0.2,
-    size,
-    img
-  });
 }
 
 function generateStars(count = 50) {
@@ -96,11 +72,6 @@ function spawnShootingStar() {
     });
 }
 
-function randomColor() {
-    const hue = Math.floor(Math.random() * 360);
-    return `hsl(${hue}, 70%, 50%)`;
-}
-
 function lerpColor(a, b, t) {
     const ah = parseInt(a.slice(1), 16),
         ar = ah >> 16,
@@ -119,45 +90,55 @@ function lerpColor(a, b, t) {
     return `rgb(${rr},${rg},${rb})`;
 }
 
+/////////////////////////////// QUESTIONS ///////////////////////
+
 function generateQuestion() {
-  const difficulty = document.getElementById('difficulty').value;
-  let a, b, ops;
+    const difficulty = document.getElementById('difficulty').value;
+  let a, b, op, ops;
 
   if (difficulty === 'easy') {
-    a = Math.floor(Math.random() * 10) + 1;
-    b = Math.floor(Math.random() * 10) + 1;
     ops = ['+', '-'];
-  } else if (difficulty === 'medium') {
+    op = ops[Math.floor(Math.random() * ops.length)];
     a = Math.floor(Math.random() * 10) + 1;
     b = Math.floor(Math.random() * 10) + 1;
+
+  } else if (difficulty === 'medium') {
     ops = ['+', '-', '*', '/'];
+    op = ops[Math.floor(Math.random() * ops.length)];
+    a = Math.floor(Math.random() * 12) + 1;
+    b = Math.floor(Math.random() * 12) + 1;
+
   } else if (difficulty === 'hard') {
-    a = Math.floor(Math.random() * 20) + 1;
-    b = Math.floor(Math.random() * 20) + 1;
     ops = ['+', '-', '*', '/'];
+    op = ops[Math.floor(Math.random() * ops.length)];
+
+    if (op === '+' || op === '-') {
+      a = Math.floor(Math.random() * (100)) + 1;
+      b = Math.floor(Math.random() * (100)) + 1;
+    } else {
+      a = Math.floor(Math.random() * 20) + 1;
+      b = Math.floor(Math.random() * 20) + 1;
+    }
   }
 
-  const op = ops[Math.floor(Math.random() * ops.length)];
+  // Division: ensure integer result
   if (op === '/') {
-    a = a * b; // ensure division has whole result
-    }else if (op === '-' && a < b) {
-        let temp = a; // no negative number answer
-        a = b;
-        b = temp;
-    }
+    a = a * b;
+  }
+  // Subtraction: prevent negative result
+  else if (op === '-' && a < b) {
+    [a, b] = [b, a];
+  }
 
   const expr = `${a} ${op} ${b}`;
-  const answer = Math.floor(eval(expr)); // safe since it's generated
+  const answer = Math.floor(eval(expr));
   question = { text: expr, answer };
+
   document.getElementById('question').textContent = `What is ${expr}?`;
   document.getElementById('answer').value = '';
 }
 
-
-function addBlock() {
-    const image = blockImages[Math.floor(Math.random() * blockImages.length)];
-    tower.push({ image, scale: 0 });
-}
+//////////////////////////// DRAW /////////////////////////////
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -225,30 +206,21 @@ function draw() {
         }
     }
 
-    //Cloud
-    for (let i = clouds.length - 1; i >= 0; i--) {
-        const c = clouds[i];
-        c.x -= c.speed;
-
-        ctx.drawImage(c.img, c.x, c.y + verticalOffset, c.size, c.size);
-
-        if (c.x + c.size < 0) {
-            clouds.splice(i, 1);
-        }
-    }
+    // Cloud
+    cloudManager.updateAndDraw(ctx, verticalOffset);
 
     // Ground
     ctx.fillStyle = '#90ee90';
     // Ground (shift upward as tower grows)
     ctx.fillRect(0, 200 + verticalOffset, canvas.width, canvas.height);
 
-    // Update and draw fireworks
+    // Fireworks
     fireworks.forEach(fw => {
         fw.update();
         fw.draw(ctx);
     });
 
-    ///////////////////////////////////////////// Tower
+    // Tower
     const blockOverlap = 60;
     for (let i = 0; i < tower.length; i++) {
     const block = tower[i];
@@ -283,30 +255,12 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-function startTimer() {
-  interval = setInterval(() => {
-    timeLeft--;
-    document.getElementById('timer').textContent = timeLeft;
+///////////////////////////// PLAYING ////////////////////////////
 
-    if (timeLeft <= 0) {
-      clearInterval(interval);
-      alert(`Game Over! You reached level ${level}. Tower height: ${tower.length}`);
-      
-      const difficulty = document.getElementById('difficulty').value;
-      const save = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
-      const prev = save[difficulty] || { level: 0, blocks: 0 };
-
-      const newBlocks = Math.max(tower.length, prev.blocks);
-      const newLevel = Math.max(level, prev.level);
-
-      save[difficulty] = { level: newLevel, blocks: newBlocks };
-      localStorage.setItem('mathTowerScores', JSON.stringify(save));
-
-      init();
-    }
-  }, 1000);
+function addBlock() {
+    const image = blockImages[Math.floor(Math.random() * blockImages.length)];
+    tower.push({ image, scale: 0 });
 }
-
 
 document.getElementById('answer').addEventListener('input', function () {
     const val = parseInt(this.value);
@@ -322,6 +276,52 @@ document.getElementById('answer').addEventListener('input', function () {
     generateQuestion();
     } 
 });
+
+///////////////////////// GAME OVER //////////////////////////
+
+function startTimer() {
+  interval = setInterval(() => {
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+
+      // Hide the canvas and show the game over screen
+      //canvas.style.display = 'none';
+      const gameOverOverlay = document.getElementById('gameOverOverlay');
+      gameOverOverlay.style.display = 'flex';
+
+      // Update the game over screen with final stats
+      document.getElementById('finalLevel').textContent = `Level: ${level}`;
+      document.getElementById('finalTowerHeight').textContent = `Tower Height: ${tower.length}`;
+
+      // Save high scores to localStorage
+      const difficulty = document.getElementById('difficulty').value;
+      const save = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+      const prev = save[difficulty] || { level: 0, blocks: 0 };
+
+      const newBlocks = Math.max(tower.length, prev.blocks);
+      const newLevel = Math.max(level, prev.level);
+
+      save[difficulty] = { level: newLevel, blocks: newBlocks };
+      localStorage.setItem('mathTowerScores', JSON.stringify(save));
+    }
+  }, 1000);
+}
+
+document.getElementById('restartButton').addEventListener('click', function() {
+  // Hide the game over screen and show the canvas again
+  const gameOverOverlay = document.getElementById('gameOverOverlay');
+  gameOverOverlay.style.display = 'none';
+  canvas.style.display = 'block';
+  
+  // Restart the game
+  reset();
+  startTimer();
+});
+
+/////////////////////// LOAD PROGRESS //////////////////////////
 
 function loadProgress() {
   let scores = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
@@ -340,18 +340,25 @@ function loadProgress() {
 
   const entries = Object.entries(scores);
   if (entries.length > 0) {
-    const parts = entries.map(([difficulty, data]) => 
-      `${difficulty[0].toUpperCase() + difficulty.slice(1)}: level ${data.level}, height ${data.blocks}`
-    );
-    alert(`Welcome back!\nBest scores:\n${parts.join('\n')}`);
-  }
+  const parts = entries.map(([difficulty, data]) =>
+    `<strong>${difficulty[0].toUpperCase() + difficulty.slice(1)}</strong>: Level ${data.level}, Height ${data.blocks}`
+  );
+  document.getElementById('welcomeScores').innerHTML = parts.join('<br>');
+  document.getElementById('welcomeOverlay').style.display = 'flex';
+
+  document.getElementById('welcomeCloseButton').onclick = () => {
+    document.getElementById('welcomeOverlay').style.display = 'none';
+  };
+}
 
   const savedDifficulty = localStorage.getItem("selectedDifficulty");
   const select = document.getElementById("difficulty");
   select.value = savedDifficulty || "medium"; // default to medium
 }
 
-function init() {
+/////////////////////// INITIALISE //////////////////////////
+
+function reset() {
   tower = [];
   verticalOffset = 0;
   level = 1;
@@ -367,27 +374,31 @@ function init() {
   
   generateQuestion();
   addBlock();
-  for (let i=0; i< 15; i++){
-    spawnCloud();
-    }
+  for (let i = 0; i < 15; i++) {
+    cloudManager.spawnCloud();
+  }
     clearInterval(interval);
-    startTimer();
 }
 
-// Init
+// load, setstage, start timer
 loadProgress();
-init();
+reset();
+
+document.getElementById('welcomeCloseButton').addEventListener('click', startTimer);
+
+////////////////////////////// RESET DIFFICULTY /////////////////
 
 document.getElementById('difficulty').addEventListener('change', (e) => {
     const selectedDifficulty = e.target.value;
     localStorage.setItem("selectedDifficulty", selectedDifficulty);
-  init();
+  reset();
+  startTimer();
 });
 
 draw();
 
 setInterval(() => {
-    if (tower.length < 3 && Math.random() < 0.1) spawnCloud();
+    if (tower.length < 3 && Math.random() < 0.1) cloudManager.spawnCloud();
     if (tower.length > 15 && tower.length < 40 && Math.random() < 0.2) triggerFirework();
     if (tower.length > 20 && Math.random() < 0.1) spawnShootingStar();
 }, 1000);  // every second
