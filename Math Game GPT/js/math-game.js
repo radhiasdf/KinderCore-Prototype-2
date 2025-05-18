@@ -1,7 +1,5 @@
 import { Firework } from './fireworks.js';
 
-
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -318,7 +316,6 @@ document.getElementById('answer').addEventListener('input', function () {
     if (score % 5 === 0) {
         level++;
         document.getElementById('level').textContent = level;
-        timeLeft += 10; 
     }
     //document.getElementById('feedback').textContent = 'Correct!';
     addBlock();

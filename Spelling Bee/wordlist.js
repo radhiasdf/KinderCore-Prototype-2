@@ -31,5 +31,5 @@
       { word: "farmer", emoji: "👩‍🌾" }, { word: "police", emoji: "👮" }, { word: "fireman", emoji: "👨‍🚒" },
       { word: "clown", emoji: "🤡" }, { word: "dancer", emoji: "💃" }, { word: "singer", emoji: "🎤" },
       { word: "artist", emoji: "🎨" }, { word: "writer", emoji: "✍️" }, { word: "king", emoji: "🤴" },
-      { word: "queen", emoji: "👸" }, { word: "prince", emoji: "👦" }, { word: "princess", emoji: "👧" }
+      { word: "queen", emoji: "👸" }, { word: "prince", emoji: "🤴" }, { word: "princess", emoji: "👸" }
     ];
