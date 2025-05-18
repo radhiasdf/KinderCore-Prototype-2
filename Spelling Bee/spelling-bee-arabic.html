@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arabic Spelling Game</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .score-timer {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 20px;
+      font-size: 24px;
+    }
+    .emoji {
+      font-size: 48px;
+      margin: 20px;
+    }
+    .hex-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .hex {
+      width: 60px;
+      height: 60px;
+      background: #e5e7eb;
+      clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .hex.filled {
+      background: #fb923c;
+    }
+    .hex.fade-out {
+      animation: fadeOut 0.5s forwards;
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(0.1);
+      }
+    }
+    #inputDisplay {
+      font-size: 28px;
+      margin-bottom: 10px;
+      min-height: 36px;
+    }
+    #transliterationDisplay {
+      font-size: 20px;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+    .keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 10px;
+    }
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+    }
+    .key {
+      padding: 10px;
+      font-size: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 20%;
+      cursor: pointer;
+      width: 40px;
+    }
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #game-over {
+      display: none;
+      font-size: 28px;
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="score-timer">
+    <div>⏱ <span id="timer">60</span>s</div>
+    <div>⭐ <span id="score">0</span></div>
+  </div>
+  <div class="emoji" id="emoji"></div>
+  <div class="hex-row" id="hexRow"></div>
+  <div id="inputDisplay"></div>
+  <div id="transliterationDisplay"></div>
+
+  <div class="keyboard" id="keyboard"></div>
+  <button class="btn" onclick="handleBackspace()">⌫ Backspace</button>
+  <button class="btn" onclick="skipWord()">Skip ⏭</button>
+  <div id="game-over">انتهى الوقت! <button onclick="resetGame()">العب مجددًا</button></div>
+
+  <audio id="correctSound" src="correct-6033.mp3"></audio>
+
+
+  <script>
+    const words = [
+      { word: "اسد", emoji: "🦁", latin: "asad" },
+      { word: "نمر", emoji: "🐯", latin: "namir" },
+      { word: "قطة", emoji: "🐱", latin: "qittah" },
+      { word: "كلب", emoji: "🐶", latin: "kalb" },
+      { word: "بقرة", emoji: "🐄", latin: "baqarah" },
+      { word: "فيل", emoji: "🐘", latin: "feel" },
+      { word: "زرافة", emoji: "🦒", latin: "zarafah" },
+      { word: "قرد", emoji: "🐒", latin: "qird" },
+      { word: "ذئب", emoji: "🐺", latin: "thi’b" },
+      { word: "ثعلب", emoji: "🦊", latin: "tha’lab" },
+      { word: "دب", emoji: "🐻", latin: "dubb" },
+      { word: "نحل", emoji: "🐝", latin: "nahlah" },
+      { word: "سلحفاة", emoji: "🐢", latin: "sulhufah" },
+      { word: "سمك", emoji: "🐟", latin: "samakah" },
+      { word: "حوت", emoji: "🐋", latin: "hoot" },
+      { word: "دولفين", emoji: "🐬", latin: "dawlfyn" },
+      { word: "حصان", emoji: "🐎", latin: "hisan" },
+      { word: "ديك", emoji: "🐓", latin: "deek" },
+      { word: "بطة", emoji: "🦆", latin: "battah" },
+      { word: "أرنب", emoji: "🐇", latin: "arnab" },
+      { word: "حمامة", emoji: "🕊️", latin: "hamamah" },
+      { word: "عنكبوت", emoji: "🕷️", latin: "ankabuut" },
+      { word: "ثعبان", emoji: "🐍", latin: "thu'baan" },
+      { word: "فأر", emoji: "🐭", latin: "fa’r" },
+      { word: "دجاجة", emoji: "🐔", latin: "dajajah" },
+      { word: "خروف", emoji: "🐑", latin: "kharuuf" },
+      { word: "جمل", emoji: "🐫", latin: "jamal" },
+      { word: "تمساح", emoji: "🐊", latin: "timsaah" },
+      { word: "طاووس", emoji: "🦚", latin: "taawuus" },
+      { word: "ضفدع", emoji: "🐸", latin: "difdaa'" }
+    ];
+
+    const keyboardLayout = [
+      ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح", "ج", "د"],
+      ["ش", "س", "ي", "ب", "ل", "ا", "ت", "ن", "م", "ك", "ط"],
+      ["ئ", "ء", "ؤ", "ر", "لا", "ى", "ة", "و", "ز", "ظ"]
+    ];
+
+    let currentIndex = Math.floor(Math.random() * words.length);
+    let input = "";
+    let score = 0;
+    let timer = 120;
+    let countdown;
+    let gameRunning = true;
+    
+
+    const emojiEl = document.getElementById("emoji");
+    const hexRow = document.getElementById("hexRow");
+    const keyboard = document.getElementById("keyboard");
+    const timerEl = document.getElementById("timer");
+    const scoreEl = document.getElementById("score");
+    const gameOverEl = document.getElementById("game-over");
+    const inputDisplay = document.getElementById("inputDisplay");
+    const transliterationDisplay = document.getElementById("transliterationDisplay");
+    const correctSound = document.getElementById('correctSound');
+
+    function startGame() {
+      gameRunning = true;
+      displayWord();
+      renderKeyboard();
+      document.addEventListener("keydown", handlePhysicalKeyboard);
+      countdown = setInterval(() => {
+        timer--;
+        timerEl.textContent = timer;
+        if (timer === 0) {
+          clearInterval(countdown);
+          gameRunning = false;
+          gameOverEl.style.display = "block";
+        }
+      }, 1000);
+    }
+
+    function displayWord() {
+      const { word, emoji } = words[currentIndex];
+      emojiEl.textContent = emoji;
+      hexRow.innerHTML = "";
+      inputDisplay.textContent = "";
+      transliterationDisplay.textContent = "";
+      for (let i = 0; i < word.length; i++) {
+        const hex = document.createElement("div");
+        hex.className = "hex";
+        hexRow.appendChild(hex);
+      }
+    }
+
+    function renderKeyboard() {
+    keyboard.innerHTML = "";
+    keyboardLayout.forEach(row => {
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "keyboard-row";
+        row.slice().reverse().forEach(key => { // Reverse the row
+        const btn = document.createElement("button");
+        btn.className = "key";
+        btn.textContent = key;
+        btn.onclick = () => handleLetter(key);
+        rowDiv.appendChild(btn);
+        });
+        keyboard.appendChild(rowDiv);
+    });
+    }
+
+    function handleLetter(letter) {
+      if (!gameRunning) return;
+      const currentWord = words[currentIndex].word;
+      if (input.length < currentWord.length) {
+        input += letter;
+        const hex = hexRow.children[input.length - 1];
+        hex.classList.add("filled");
+        hex.textContent = letter;
+        inputDisplay.textContent = input;
+        if (input === currentWord) {
+          correctSound.play();
+          score += currentWord.length;
+          scoreEl.textContent = score;
+          transliterationDisplay.textContent = words[currentIndex].latin;
+          Array.from(hexRow.children).forEach(hex => hex.classList.add("fade-out"));
+          setTimeout(() => {
+            input = "";
+            currentIndex = Math.floor(Math.random() * words.length);
+            displayWord();
+          }, 600);
+        }
+      }
+    }
+
+    function handleBackspace() {
+      if (!gameRunning) return;
+      if (input.length > 0) {
+        input = input.slice(0, -1);
+        const hex = hexRow.children[input.length];
+        hex.classList.remove("filled");
+        hex.textContent = "";
+        inputDisplay.textContent = input;
+      }
+    }
+
+    function handlePhysicalKeyboard(e) {
+      if (!gameRunning) return;
+      const letter = e.key;
+      if (letter === "Backspace") {
+        handleBackspace();
+      } else if (/^[\u0600-\u06FF]$/.test(letter)) {
+        handleLetter(letter);
+      }
+    }
+
+    function skipWord() {
+      if (!gameRunning) return;
+      const currentWord = words[currentIndex];
+      input = currentWord.word;
+      inputDisplay.textContent = input;
+      transliterationDisplay.textContent = currentWord.latin;
+      Array.from(hexRow.children).forEach((hex, idx) => {
+        hex.classList.add("filled");
+        hex.textContent = currentWord.word[idx];
+      });
+      setTimeout(() => {
+        input = "";
+        currentIndex = Math.floor(Math.random() * words.length);
+        displayWord();
+      }, 1000);
+    }
+
+    function resetGame() {
+      timer = 120;
+      score = 0;
+      currentIndex = Math.floor(Math.random() * words.length);
+      input = "";
+      timerEl.textContent = timer;
+      scoreEl.textContent = score;
+      gameOverEl.style.display = "none";
+      displayWord();
+      clearInterval(countdown);
+      startGame();
+    }
+
+    startGame();
+  </script>
+</body>
+</html>

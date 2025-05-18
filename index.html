@@ -147,7 +147,7 @@
 
   <div class="container">
     <section>
-      <h2>Screen Time Controls (Not working yet)</h2>
+      <h2>Screen Time Controls (On Progress)</h2>
         <button class="btn" onclick="openControls()">Manage Limits</button>
       <div class="app-item">
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -192,6 +192,19 @@
             <button class="btn" onclick="startSpellingGame()">Play</button>
         </div>
       </div>
+
+      <div class="game-item">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="icons/spellingbeearabicicon.png" alt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
+            <div>
+            <strong>Arabic Spelling Bee</strong>
+            <div class="score" id="best-spelling-score">Best Score: --</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn" onclick="startArabicSpellingGame()">Play</button>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -230,6 +243,10 @@
 
     function startSpellingGame() {
       window.location.href = "Spelling Bee/spelling-bee-game.html";
+    }
+
+    function startArabicSpellingGame(){
+      window.location.href = "Spelling Bee/spelling-bee-arabic.html";
     }
 
     document.addEventListener("DOMContentLoaded", () => {

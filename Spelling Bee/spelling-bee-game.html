@@ -120,10 +120,6 @@
     <option value="medium">Medium</option>
     <option value="hard">Hard</option>
   </select>
-  <!-- <select id="languageSelect">
-    <option value="en">English</option>
-    <option value="ar">العربية</option>
-  </select> -->
 
   <div id="arabicKeyboard" class="keyboard" style="display: none;"></div>
 
@@ -207,20 +203,20 @@
       }
     });
 
-    // document.getElementById("languageSelect").addEventListener("change", (e) => {
-    //   currentLanguage = e.target.value;
-    //   loadNewWord(); // re-pick word from selected language
-    // });
+    document.getElementById("languageSelect").addEventListener("change", (e) => {
+      currentLanguage = e.target.value;
+      loadNewWord(); // re-pick word from selected language
+    });
 
-    // languageSelect.addEventListener("change", (e) => {
-    //   currentLanguage = e.target.value;
-    //   if (currentLanguage === "ar") {
-    //     arabicKeyboard.style.display = "block";
-    //     generateArabicKeyboard();
-    //   } else {
-    //     arabicKeyboard.style.display = "none";
-    //   }
-    // });
+    languageSelect.addEventListener("change", (e) => {
+      currentLanguage = e.target.value;
+      if (currentLanguage === "ar") {
+        arabicKeyboard.style.display = "block";
+        generateArabicKeyboard();
+      } else {
+        arabicKeyboard.style.display = "none";
+      }
+    });
 
     document.getElementById('skipButton').addEventListener('click', () => {
       wordInput.value = '';
