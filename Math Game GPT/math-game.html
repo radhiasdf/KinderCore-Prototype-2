@@ -15,53 +15,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Math Tower Game</title>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
-    }
-    canvas {
-      display: block;
-      background: linear-gradient(#87ceeb, #87ceeb);
-    }
-    #ui {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 1em;
-      border-radius: 8px;
-      text-align: center;
-    }
-    #question {
-      font-size: 1.5rem;         /* Make text larger */
-      font-weight: bold;       /* Make it stand out */
-      text-align: center;      /* Center it */
-      margin: px 0;          /* Add spacing */
-      color: rgb(9, 2, 70);            /* Make it pop against sky */
-    }
-    input {
-      padding: 0.5em;
-      font-size: 1em;
-    }
-    #difficulty-container {
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: clamp(14px, 2vw, 18px);
-      z-index: 10;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
+    
 
-    #difficulty {
-      font-size: 1rem;
-      padding: 5px;
-    }
+    
   </style>
+
+  <link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
     
@@ -85,7 +45,9 @@
       placeholder="Your answer" 
       autofocus 
     />
-    <div>Level: <span id="level">1</span> | Time: <span id="timer">60</span>s</div>
+  <div class="game-info">
+    Level: <span id="level">1</span> | Time: <span id="timer">60</span>s
+  </div>
     <div id="feedback"></div>
     </div>
   </div>
@@ -93,6 +55,24 @@
 
 
   <canvas id="gameCanvas"></canvas>
+
+  <div id="gameOverOverlay" class="game-over-overlay">
+  <div class="game-over-content">
+    <h2>Game Over!</h2>
+    <p id="finalLevel">Level: 1</p>
+    <p id="finalTowerHeight">Tower Height: 0</p>
+    <button id="restartButton">Restart</button>
+  </div>
+</div>
+
+<div id="welcomeOverlay" style="display: none;">
+  <div id="welcomeBox">
+    <h1>Welcome Back!</h1>
+    <h2>Best Scores:</h2>
+    <p id="welcomeScores"></p>
+    <button id="welcomeCloseButton">Start Game</button>
+  </div>
+</div>
 
   <script type="module" src="js/math-game.js"></script>
 
