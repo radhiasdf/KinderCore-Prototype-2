@@ -172,7 +172,7 @@
             <img src="icons/mathtowericon.png" alt="Arithmetic Tower" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
                 <strong>Arithmetic Tower</strong>
-                <div class="score" id="best-arithmetic-score">Best Score: --</div>
+                <div class="score" id="bestArithmetic">Best Score: --</div>
             </div>
         </div>
         <div>
@@ -185,7 +185,7 @@
             <img src="icons/spellingbeeicon.png" alt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
             <strong>Spelling Bee</strong>
-            <div class="score" id="best-spelling-score">Best Score: --</div>
+            <div class="score" id="bestSpelling">Best Score: --</div>
             </div>
         </div>
         <div>
@@ -198,7 +198,7 @@
             <img src="icons/spellingbeearabicicon.png" alt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
             <strong>Arabic Spelling Bee</strong>
-            <div class="score" id="best-spelling-score">Best Score: --</div>
+            <div class="score" id="bestSpellingArabic">Best Score: --</div>
             </div>
         </div>
         <div>
@@ -256,14 +256,24 @@
         document.getElementById("setupModal").classList.add("hidden");
       }
 
-      const bestMath = localStorage.getItem("bestArithmetic");
+      const bestMath = JSON.parse(localStorage.getItem("mathTowerScores") || '{}');
+      
       if (bestMath) {
-        document.getElementById("best-arithmetic-score").innerText = `Best Score: ${bestMath}`;
+        const entries = Object.entries(bestMath);
+        const parts = entries.map(([difficulty, data]) =>
+          `${difficulty[0].toUpperCase() + difficulty.slice(1)}: ${data.blocks}`
+        );
+        document.getElementById("bestArithmetic").innerHTML = `Best Scores:<br> ${parts.join('<br>')}`;
       }
 
       const bestSpelling = localStorage.getItem("bestSpelling");
       if (bestSpelling) {
-        document.getElementById("best-spelling-score").innerText = `Best Score: ${bestSpelling}`;
+        document.getElementById("bestSpelling").innerText = `Best Score: ${bestSpelling}`;
+      }
+
+      const bestSpellingArabic = localStorage.getItem("bestSpellingArabic");
+      if (bestSpellingArabic) {
+        document.getElementById("bestSpellingArabic").innerText = `Best Score: ${bestSpellingArabic}`;
       }
     });
   </script>

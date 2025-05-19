@@ -120,6 +120,10 @@
     <option value="medium">Medium</option>
     <option value="hard">Hard</option>
   </select>
+  <!-- <select id="languageSelect">
+    <option value="en">English</option>
+    <option value="ar">العربية</option>
+  </select> -->
 
   <div id="arabicKeyboard" class="keyboard" style="display: none;"></div>
 
@@ -131,7 +135,7 @@
   <script>
 
     let score = 0;
-    let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+    let highScore = parseInt(localStorage.getItem('bestSpelling')) || 0;
     let currentIndex = 0;
     let timeLeft = 60;
     let countdownInterval;
@@ -149,9 +153,6 @@
     const difficultySelect = document.getElementById('difficulty');
     const gameOverScreen = document.getElementById('gameOver');
     const finalScoreDisplay = document.getElementById('finalScore');
-
-      const arabicLetters = "ضصثقفغعهخحجدشسيبلاتنمكطئءؤرلاىةوزظ".split("");
-
 
     highScoreDisplay.textContent = highScore;
 
@@ -193,28 +194,13 @@
           if (score > highScore) {
             highScore = score;
             highScoreDisplay.textContent = highScore;
-            localStorage.setItem('highScore', highScore);
+            localStorage.setItem('bestSpelling', highScore);
           }
           wordInput.value = '';
           loadWord();
         }, 1000);
       } else if (input.length === currentWord.length && input !== currentWord) {
         wrongSound.play();
-      }
-    });
-
-    document.getElementById("languageSelect").addEventListener("change", (e) => {
-      currentLanguage = e.target.value;
-      loadNewWord(); // re-pick word from selected language
-    });
-
-    languageSelect.addEventListener("change", (e) => {
-      currentLanguage = e.target.value;
-      if (currentLanguage === "ar") {
-        arabicKeyboard.style.display = "block";
-        generateArabicKeyboard();
-      } else {
-        arabicKeyboard.style.display = "none";
       }
     });
 
