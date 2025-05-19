@@ -130,6 +130,32 @@
     .hidden {
       display: none;
     }
+
+    .btn-view-leaderboards {
+      display: inline-block;
+      margin: 20px auto;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      background-color: var(--primary);
+      border-radius: 12px;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.2s ease;
+    }
+    .btn-view-leaderboards:hover {
+      background-color: #4338ca;
+    }
+
+    @media (max-width: 500px) {
+      .game-item img {
+        width: 1.5cm;
+        height: 1.5cm;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -176,7 +202,7 @@
             <img src="icons/mathtowericon.png" alt="Arithmetic Tower" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
                 <strong>Arithmetic Tower</strong>
-                <div class="score" id="bestArithmetic">Best Score: --</div>
+                <div class="score" id="bestArithmetic">⭐Best Score: --</div>
             </div>
         </div>
         <div>
@@ -189,7 +215,7 @@
             <img src="icons/spellingbeeicon.png" alt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
             <strong>Spelling Bee</strong>
-            <div class="score" id="bestSpelling">Best Score: --</div>
+            <div class="score" id="bestSpelling">⭐Best Score: --</div>
             </div>
         </div>
         <div>
@@ -202,7 +228,7 @@
             <img src="icons/spellingbeearabicicon.png" alt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
             <strong>Arabic Spelling Bee</strong>
-            <div class="score" id="bestSpellingArabic">Best Score: --</div>
+            <div class="score" id="bestSpellingArabic">⭐Best Score: --</div>
             </div>
         </div>
         <div>
@@ -211,6 +237,9 @@
       </div>
       <p id="coming-soon">More Games Coming Soon</p>
     </section>
+
+    <a href="leaderboard.html" class="btn-view-leaderboards">🏆 View Leaderboards</a>
+
   </div>
 
 
@@ -269,17 +298,17 @@
         const parts = entries.map(([difficulty, data]) =>
           `${difficulty[0].toUpperCase() + difficulty.slice(1)}: ${data.blocks}`
         );
-        document.getElementById("bestArithmetic").innerHTML = `Best Scores:<br> ${parts.join('<br>')}`;
+        document.getElementById("bestArithmetic").innerHTML = `⭐Best Scores:<br> ${parts.join('<br>')}`;
       }
 
       const bestSpelling = localStorage.getItem("bestSpelling");
       if (bestSpelling) {
-        document.getElementById("bestSpelling").innerText = `Best Score: ${bestSpelling}`;
+        document.getElementById("bestSpelling").innerText = `⭐Best Score: ${bestSpelling}`;
       }
 
       const bestSpellingArabic = localStorage.getItem("bestSpellingArabic");
       if (bestSpellingArabic) {
-        document.getElementById("bestSpellingArabic").innerText = `Best Score: ${bestSpellingArabic}`;
+        document.getElementById("bestSpellingArabic").innerText = `⭐Best Score: ${bestSpellingArabic}`;
       }
     });
   </script>
