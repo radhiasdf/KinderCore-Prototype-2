@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KinderCore Leaderboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9fb;
+      margin: 0;
+      padding: 20px;
+      color: #111827;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4f46e5;
+    }
+
+    .form-section {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      max-width: 400px;
+      margin: 0 auto 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    input, select, button {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .leaderboard {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .game-board {
+      background: white;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .game-board h2 {
+      color: #4f46e5;
+      margin-top: 0;
+    }
+
+    .score-entry {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
+
+    .score-entry:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 KinderCore Leaderboard</h1>
+
+  <div class="form-section">
+    <label for="playerName">Your Name:</label>
+    <input type="text" id="playerName" placeholder="Enter your name"/>
+
+    <label for="gameSelect">Select Game:</label>
+    <select id="gameSelect">
+      <option value="math">Arithmetic Tower</option>
+      <option value="spelling">Spelling Bee</option>
+      <option value="spelling_arabic">Arabic Spelling Bee</option>
+    </select>
+
+    <label for="score">Score:</label>
+    <input type="number" id="score" placeholder="Your score"/>
+
+    <button onclick="submitScore()">Submit Score</button>
+  </div>
+
+  <div class="leaderboard" id="leaderboardContainer">
+    <!-- Leaderboards will be loaded here -->
+  </div>
+
+    <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyBpuR6e7DNDxCkdhbG9g5y4jshDvc-XaEM",
+        authDomain: "kindercore-leaderboard.firebaseapp.com",
+        projectId: "kindercore-leaderboard",
+        storageBucket: "kindercore-leaderboard.firebasestorage.app",
+        messagingSenderId: "800292504950",
+        appId: "1:800292504950:web:093383fed69be3542b6657",
+        measurementId: "G-F916CR9FTE"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // 1. Add Firestore imports
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+    // 2. Initialize Firestore
+    const db = getFirestore(app);
+
+    const GAMES = {
+      math: "Arithmetic Tower",
+      spelling: "Spelling Bee",
+      spelling_arabic: "Arabic Spelling Bee"
+    };
+
+    async function submitScore() {
+      const name = document.getElementById("playerName").value.trim();
+      const gameKey = document.getElementById("gameSelect").value;
+      const score = parseInt(document.getElementById("score").value);
+
+      if (!name || isNaN(score)) {
+        alert("Please enter your name and a valid score.");
+        return;
+      }
+
+      await db.collection("leaderboard").add({
+        name,
+        score,
+        game: gameKey,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert("Score submitted!");
+      document.getElementById("score").value = "";
+      loadLeaderboard();
+    }
+
+    async function loadLeaderboard() {
+      const container = document.getElementById("leaderboardContainer");
+      container.innerHTML = "";
+
+      for (const key in GAMES) {
+        const snapshot = await db.collection("leaderboard")
+          .where("game", "==", key)
+          .orderBy("score", "desc")
+          .limit(10)
+          .get();
+
+        const gameDiv = document.createElement("div");
+        gameDiv.className = "game-board";
+        gameDiv.innerHTML = `<h2>${GAMES[key]}</h2>`;
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const entry = document.createElement("div");
+          entry.className = "score-entry";
+          entry.innerHTML = `<span>${data.name}</span><span>${data.score}</span>`;
+          gameDiv.appendChild(entry);
+        });
+
+        container.appendChild(gameDiv);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadLeaderboard);
+  </script>
+</body>
+</html>

@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+
+<!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMM97RHP9P"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TMM97RHP9P');
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arabic Spelling Game</title>
@@ -74,7 +85,7 @@
       height: 36px;
     }
     #transliterationDisplay {
-      font-size: 9vw;
+      font-size: 36px;
       color: #6b7280;
       margin-bottom: 20px;
       min-height: 1.2em; /* Always takes at least one line of space */
@@ -122,6 +133,8 @@
       background: #e1e1e1;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
+    
     #game-over {
       display: none;
       font-size: 28px;
@@ -133,6 +146,19 @@
       font-size: 30px;
     }
 
+    @media (min-width: 768px) {
+      .key {
+        font-size: 24px;
+        padding: 10px;
+        width: 60px;
+        height: 80px;
+      }
+
+      .btn {
+        font-size: 20px;
+        padding: 10px 20px;
+      }
+    }
     
   </style>
 </head>
@@ -164,34 +190,37 @@
     const words = [
       { word: "اسد", emoji: "🦁", latin: "asad" },
       { word: "نمر", emoji: "🐯", latin: "namir" },
-      { word: "قطة", emoji: "🐱", latin: "qittah" },
+      { word: "قطة", emoji: "🐱", latin: "qittoh" },
       { word: "كلب", emoji: "🐶", latin: "kalb" },
       { word: "بقرة", emoji: "🐄", latin: "baqarah" },
-      { word: "فيل", emoji: "🐘", latin: "feel" },
-      { word: "زرافة", emoji: "🦒", latin: "zarafah" },
+      { word: "فيل", emoji: "🐘", latin: "fiil" },
+      { word: "زرافة", emoji: "🦒", latin: "zaraafah" },
       { word: "قرد", emoji: "🐒", latin: "qird" },
       { word: "ذئب", emoji: "🐺", latin: "thi’b" },
       { word: "ثعلب", emoji: "🦊", latin: "tha’lab" },
       { word: "دب", emoji: "🐻", latin: "dubb" },
       { word: "نحل", emoji: "🐝", latin: "nahl" },
-      { word: "سلحفاة", emoji: "🐢", latin: "sulhufah" },
+      { word: "سلحفاة", emoji: "🐢", latin: "sulhufaah" },
       { word: "سمك", emoji: "🐟", latin: "samak" },
-      { word: "حوت", emoji: "🐋", latin: "hoot" },
-      { word: "دولفين", emoji: "🐬", latin: "dawlfyn" },
-      { word: "حصان", emoji: "🐎", latin: "hisan" },
-      { word: "ديك", emoji: "🐓", latin: "deek" },
+      { word: "حوت", emoji: "🐋", latin: "huut" },
+      { word: "دولفين", emoji: "🐬", latin: "duulfiin" },
+      { word: "حصان", emoji: "🐎", latin: "hisaan" },
+      { word: "ديك", emoji: "🐓", latin: "diik" },
       { word: "بطة", emoji: "🦆", latin: "battah" },
       { word: "ارنب", emoji: "🐇", latin: "arnab" },
-      { word: "حمامة", emoji: "🕊️", latin: "hamamah" },
+      { word: "حمامة", emoji: "🕊️", latin: "hamaamah" },
       { word: "عنكبوت", emoji: "🕷️", latin: "ankabuut" },
       { word: "ثعبان", emoji: "🐍", latin: "thu'baan" },
       { word: "فار", emoji: "🐭", latin: "fa’r" },
-      { word: "دجاجة", emoji: "🐔", latin: "dajajah" },
+      { word: "دجاجة", emoji: "🐔", latin: "dajaajah" },
       { word: "خروف", emoji: "🐑", latin: "kharuuf" },
       { word: "جمل", emoji: "🐫", latin: "jamal" },
       { word: "تمساح", emoji: "🐊", latin: "timsaah" },
       { word: "طاووس", emoji: "🦚", latin: "taawuus" },
-      { word: "ضفدع", emoji: "🐸", latin: "difdaa'" }
+      { word: "ضفدع", emoji: "🐸", latin: "dhifda'" },
+      { word: "نمل", emoji: "🐜", latin: "naml" },         // Ant
+      { word: "غنم", emoji: "🐐🐑", latin: "ghanam" },          // Goat
+      { word: "خنزير", emoji: "🐖", latin: "khinziir" },      // Pig
     ];
 
     const keyboardLayout = [
