@@ -4,186 +4,273 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KinderCore Leaderboard</title>
+  <link rel="stylesheet" href="style.css" />
+
   <style>
+    /* Same style as main HTML */
+    :root {
+      --primary: #4f46e5;
+      --light: #f9f9fb;
+      --gray: #6b7280;
+      --bg: #ffffff;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f9fb;
       margin: 0;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--light);
       color: #111827;
     }
 
-    h1 {
-      text-align: center;
-      color: #4f46e5;
-    }
-
-    .form-section {
-      background: white;
-      padding: 16px;
-      border-radius: 12px;
-      max-width: 400px;
-      margin: 0 auto 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    input, select, button {
-      display: block;
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background-color: #4f46e5;
+    header {
+      background-color: var(--primary);
       color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 20px;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: bold;
     }
 
-    .leaderboard {
+    .container {
+      padding: 16px;
       max-width: 600px;
       margin: 0 auto;
     }
 
-    .game-board {
-      background: white;
-      margin-top: 20px;
-      padding: 16px;
+    section {
+      background-color: var(--bg);
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      padding: 16px;
     }
 
-    .game-board h2 {
-      color: #4f46e5;
+    section h2 {
       margin-top: 0;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .game-icon {
+      width: 2cm;
+      height: 2cm;
+      border-radius: 8px;
+      display: block;
+      margin-bottom: 10px;
     }
 
     .score-entry {
       display: flex;
       justify-content: space-between;
+      padding: 6px 0;
       border-bottom: 1px solid #eee;
-      padding: 8px 0;
     }
 
-    .score-entry:last-child {
-      border-bottom: none;
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .your-score {
+      font-size: 0.9rem;
+      margin-top: 10px;
+      color: var(--gray);
+    }
+
+    .name-prompt {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .name-prompt input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
+
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <h1>🎉 KinderCore Leaderboard</h1>
+  <header>KinderCore Leaderboard</header>
 
-  <div class="form-section">
-    <label for="playerName">Your Name:</label>
-    <input type="text" id="playerName" placeholder="Enter your name"/>
 
-    <label for="gameSelect">Select Game:</label>
-    <select id="gameSelect">
-      <option value="math">Arithmetic Tower</option>
-      <option value="spelling">Spelling Bee</option>
-      <option value="spelling_arabic">Arabic Spelling Bee</option>
-    </select>
 
-    <label for="score">Score:</label>
-    <input type="number" id="score" placeholder="Your score"/>
+  <div class="container" id="leaderboardContainer"></div>
 
-    <button onclick="submitScore()">Submit Score</button>
-  </div>
+<script>
+    const deviceId = localStorage.getItem('deviceId') || crypto.randomUUID();
+    localStorage.setItem('deviceId', deviceId);
 
-  <div class="leaderboard" id="leaderboardContainer">
-    <!-- Leaderboards will be loaded here -->
-  </div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBpuR6e7DNDxCkdhbG9g5y4jshDvc-XaEM",
+    authDomain: "kindercore-leaderboard.firebaseapp.com",
+    projectId: "kindercore-leaderboard",
+    storageBucket: "kindercore-leaderboard.firebasestorage.app",
+    messagingSenderId: "800292504950",
+    appId: "1:800292504950:web:093383fed69be3542b6657",
+    measurementId: "G-F916CR9FTE"
+  };
 
-    <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-        apiKey: "AIzaSyBpuR6e7DNDxCkdhbG9g5y4jshDvc-XaEM",
-        authDomain: "kindercore-leaderboard.firebaseapp.com",
-        projectId: "kindercore-leaderboard",
-        storageBucket: "kindercore-leaderboard.firebasestorage.app",
-        messagingSenderId: "800292504950",
-        appId: "1:800292504950:web:093383fed69be3542b6657",
-        measurementId: "G-F916CR9FTE"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-
-    // 1. Add Firestore imports
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-
-    // 2. Initialize Firestore
-    const db = getFirestore(app);
-
-    const GAMES = {
-      math: "Arithmetic Tower",
-      spelling: "Spelling Bee",
-      spelling_arabic: "Arabic Spelling Bee"
-    };
-
-    async function submitScore() {
-      const name = document.getElementById("playerName").value.trim();
-      const gameKey = document.getElementById("gameSelect").value;
-      const score = parseInt(document.getElementById("score").value);
-
-      if (!name || isNaN(score)) {
-        alert("Please enter your name and a valid score.");
-        return;
+  const games = [
+    {
+      id: 'arithmetic_easy',
+      name: 'Arithmetic Tower (Easy) - Questions Answered',
+      icon: 'icons/mathtowericon.png',
+      localKey: 'mathTowerScores',
+      difficulty: 'easy',
+      getLocalScore: () => {
+        const data = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+        return data.easy?.blocks || '--';
       }
+    },
+    {
+      id: 'arithmetic_medium',
+      name: 'Arithmetic Tower (Medium) - Questions Answered',
+      icon: 'icons/mathtowericon.png',
+      localKey: 'mathTowerScores',
+      difficulty: 'medium',
+      getLocalScore: () => {
+        const data = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+        return data.medium?.blocks || '--';
+      }
+    },
+    {
+      id: 'arithmetic_hard',
+      name: 'Arithmetic Tower (Hard) - Questions Answered',
+      icon: 'icons/mathtowericon.png',
+      localKey: 'mathTowerScores',
+      difficulty: 'hard',
+      getLocalScore: () => {
+        const data = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+        return data.hard?.blocks || '--';
+      }
+    },
+    {
+      id: 'spelling',
+      name: 'Spelling Bee - Letters Typed',
+      icon: 'icons/spellingbeeicon.png',
+      localKey: 'bestSpelling',
+      getLocalScore: () => localStorage.getItem('bestSpelling') || '--'
+    },
+    {
+      id: 'spellingArabic',
+      name: 'Arabic Spelling Bee - Letters Typed',
+      icon: 'icons/spellingbeearabicicon.png',
+      localKey: 'bestSpellingArabic',
+      getLocalScore: () => localStorage.getItem('bestSpellingArabic') || '--'
+    }
+  ];
 
-      await db.collection("leaderboard").add({
+  function renderLeaderboards() {
+    const container = document.getElementById('leaderboardContainer');
+    games.forEach(game => {
+      const section = document.createElement('section');
+      section.innerHTML = `
+        <img src="${game.icon}" class="game-icon" alt="${game.name}" />
+        <h2>${game.name}</h2>
+        <div id="${game.id}-scores">Loading...</div>
+        <div class="your-score">Your Best: <span id="${game.id}-your-score">${game.getLocalScore()}</span></div>
+        <div class="name-prompt hidden" id="${game.id}-prompt">
+          <input type="text" id="${game.id}-name" placeholder="Enter your name" />
+          <button class="btn" onclick="submitScore('${game.id}')">Submit</button>
+        </div>
+        <button class="btn" onclick="showPrompt('${game.id}')">Submit Score</button>
+      `;
+      container.appendChild(section);
+      loadLeaderboard(game.id);
+    });
+  }
+
+  function showPrompt(gameId) {
+    document.getElementById(`${gameId}-prompt`).classList.remove('hidden');
+  }
+
+  async function loadLeaderboard(gameId) {
+    const scoreDiv = document.getElementById(`${gameId}-scores`);
+    const snapshot = await db.collection("leaderboards").doc(gameId).collection("scores")
+      .orderBy("score", "desc").limit(10).get();
+
+    if (snapshot.empty) {
+      scoreDiv.innerHTML = "<p>No scores yet.</p>";
+      return;
+    }
+
+    scoreDiv.innerHTML = '';
+    snapshot.forEach(doc => {
+        const { name, score } = doc.data();
+        const isYou = doc.id === deviceId;
+        const entry = document.createElement('div');
+        entry.className = 'score-entry' + (isYou ? ' highlight' : '');
+        entry.innerHTML = `<span>${name}${isYou ? ' (You)' : ''}</span><span>${score}</span>`;
+        scoreDiv.appendChild(entry);
+    });
+  }
+
+  async function submitScore(gameId) {
+    const nameInput = document.getElementById(`${gameId}-name`);
+    const name = nameInput.value.trim();
+
+    if (!name || name.length > 20) {
+      alert("Please enter a valid name (max 20 characters).");
+      return;
+    }
+
+    let score = 0;
+    if (gameId.startsWith('arithmetic')) {
+      const difficulty = gameId.split('_')[1]; // easy / medium / hard
+      const scores = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+      score = (scores[difficulty]?.blocks) || 0;
+    } else {
+      score = parseInt(localStorage.getItem(`best${capitalize(gameId)}`), 10) || 0;
+    }
+
+    if (isNaN(score) || score <= 0) {
+      alert("No valid score to submit.");
+      return;
+    }
+
+    const scoreRef = db.collection("leaderboards").doc(gameId).collection("scores").doc(deviceId);
+    await scoreRef.set({
         name,
         score,
-        game: gameKey,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
+        timestamp: Date.now()
+    });
+    alert("Score submitted!");
+    document.getElementById(`${gameId}-prompt`).classList.add('hidden');
+    loadLeaderboard(gameId);
+  }
 
-      alert("Score submitted!");
-      document.getElementById("score").value = "";
-      loadLeaderboard();
-    }
+  function capitalize(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
 
-    async function loadLeaderboard() {
-      const container = document.getElementById("leaderboardContainer");
-      container.innerHTML = "";
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
 
-      for (const key in GAMES) {
-        const snapshot = await db.collection("leaderboard")
-          .where("game", "==", key)
-          .orderBy("score", "desc")
-          .limit(10)
-          .get();
+  document.addEventListener("DOMContentLoaded", renderLeaderboards);
+</script>
 
-        const gameDiv = document.createElement("div");
-        gameDiv.className = "game-board";
-        gameDiv.innerHTML = `<h2>${GAMES[key]}</h2>`;
-
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const entry = document.createElement("div");
-          entry.className = "score-entry";
-          entry.innerHTML = `<span>${data.name}</span><span>${data.score}</span>`;
-          gameDiv.appendChild(entry);
-        });
-
-        container.appendChild(gameDiv);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadLeaderboard);
-  </script>
 </body>
 </html>
