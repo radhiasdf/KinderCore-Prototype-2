@@ -259,7 +259,7 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-///////////////////////////// PLAYING ////////////////////////////
+///////////////////////////// RUNNING ////////////////////////////
 
 function addBlock() {
     const image = blockImages[Math.floor(Math.random() * blockImages.length)];
@@ -347,7 +347,6 @@ function loadProgress() {
   }
 
   const entries = Object.entries(scores);
-  //if (entries.length > 0) {
   const parts = entries.map(([difficulty, data]) =>
     `<strong>${difficulty[0].toUpperCase() + difficulty.slice(1)}</strong>: Level ${data.level}, Height ${data.blocks}`
   );

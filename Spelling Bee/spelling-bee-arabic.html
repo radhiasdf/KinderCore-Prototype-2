@@ -56,6 +56,18 @@
         transform: scale(0.1);
       }
     }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .hex.wrong {
+      animation: shake 0.4s ease;
+      background-color: #ffdddd; /* light red */
+    }
     #inputDisplay {
       font-size: 36px;
       margin-bottom: 10px;
@@ -113,7 +125,7 @@
     #game-over {
       display: none;
       font-size: 28px;
-      color: rgb(155, 9, 9);
+      color: rgb(0, 0, 0);
       margin-top: 20px;
     }
     #restartButton {
@@ -137,7 +149,11 @@
   <div class="keyboard" id="keyboard"></div>
   <button class="btn" onclick="handleBackspace()">⌫ Backspace</button>
   <button class="btn" onclick="skipWord()">Skip ⏭</button>
-  <div id="game-over">انتهى الوقت - Game Over<button class="btn" onclick="resetGame()">العب مجددًا - Play Again</button></div>
+
+  <div id="game-over">انتهى الوقت - Game Over
+    <div>⭐ <span id="score1">0</span></div>
+    <button class="btn" onclick="resetGame()">العب مجددًا - Play Again</button>
+  </div>
 
   <div id="history" style="margin-top: 20px; text-align: center;"></div>
 
@@ -165,11 +181,11 @@
       { word: "حصان", emoji: "🐎", latin: "hisan" },
       { word: "ديك", emoji: "🐓", latin: "deek" },
       { word: "بطة", emoji: "🦆", latin: "battah" },
-      { word: "أرنب", emoji: "🐇", latin: "arnab" },
+      { word: "ارنب", emoji: "🐇", latin: "arnab" },
       { word: "حمامة", emoji: "🕊️", latin: "hamamah" },
       { word: "عنكبوت", emoji: "🕷️", latin: "ankabuut" },
       { word: "ثعبان", emoji: "🐍", latin: "thu'baan" },
-      { word: "فأر", emoji: "🐭", latin: "fa’r" },
+      { word: "فار", emoji: "🐭", latin: "fa’r" },
       { word: "دجاجة", emoji: "🐔", latin: "dajajah" },
       { word: "خروف", emoji: "🐑", latin: "kharuuf" },
       { word: "جمل", emoji: "🐫", latin: "jamal" },
@@ -197,6 +213,7 @@
     const keyboard = document.getElementById("keyboard");
     const timerEl = document.getElementById("timer");
     const scoreEl = document.getElementById("score");
+    const scoreGameOver = document.getElementById("score1");
     const gameOverEl = document.getElementById("game-over");
     const inputDisplay = document.getElementById("inputDisplay");
     const transliterationDisplay = document.getElementById("transliterationDisplay");
@@ -211,11 +228,23 @@
         timer--;
         timerEl.textContent = timer;
         if (timer === 0) {
-          clearInterval(countdown);
-          gameRunning = false;
-          gameOverEl.style.display = "block";
+          gameOver();
         }
       }, 1000);
+    }
+
+    function gameOver(){
+      gameRunning = false;
+      clearInterval(countdown);
+      gameOverEl.style.display = "block";
+      scoreGameOver.textContent = score;
+
+      const currentHighScore = localStorage.getItem('bestSpellingArabic');
+      if (score > (currentHighScore || 0)) {
+        localStorage.setItem('bestSpellingArabic', score);  // Save the new high score
+      }
+      
+
     }
 
     function displayWord() {
@@ -258,7 +287,7 @@
         inputDisplay.textContent = input;
         if (input === currentWord) {
           correctSound.play();
-          addToHistory(currentWord.word, words[currentIndex].latin, words[currentIndex].emoji);
+          addToHistory(words[currentIndex].word, words[currentIndex].latin, words[currentIndex].emoji);
           score += currentWord.length;
           scoreEl.textContent = score;
           transliterationDisplay.textContent = words[currentIndex].latin;
@@ -268,6 +297,12 @@
             currentIndex = Math.floor(Math.random() * words.length);
             displayWord();
           }, 600);
+        }
+        else if (input.length === currentWord.length){
+          showWrongAnswerAnimation();
+          if (navigator.vibrate) {
+            navigator.vibrate(200); // vibrates device for 200ms
+          }
         }
       }
     }
@@ -293,6 +328,16 @@
       }
     }
 
+    function showWrongAnswerAnimation() {
+      const hexagons = document.querySelectorAll('.hex');
+      hexagons.forEach(hex => {
+        hex.classList.add('wrong');
+        setTimeout(() => {
+          hex.classList.remove('wrong');
+        }, 400); // match the animation duration
+      });
+    }
+
     function skipWord() {
       if (!gameRunning) return;
       const currentWord = words[currentIndex];
@@ -303,7 +348,7 @@
         hex.classList.add("filled");
         hex.textContent = currentWord.word[idx];
       });
-      addToHistory(currentWord.word, words[currentIndex].latin, words[currentIndex].emoji);
+      addToHistory(words[currentIndex].word, words[currentIndex].latin, words[currentIndex].emoji);
       setTimeout(() => {
         input = "";
         currentIndex = Math.floor(Math.random() * words.length);
