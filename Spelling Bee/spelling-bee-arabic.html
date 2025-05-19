@@ -6,11 +6,15 @@
   <title>Arabic Spelling Game</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
       text-align: center;
       background: #f3f4f6;
       margin: 0;
       padding: 20px;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     .score-timer {
       display: flex;
@@ -53,52 +57,76 @@
       }
     }
     #inputDisplay {
-      font-size: 28px;
+      font-size: 36px;
       margin-bottom: 10px;
-      min-height: 36px;
+      height: 36px;
     }
     #transliterationDisplay {
-      font-size: 20px;
+      font-size: 9vw;
       color: #6b7280;
       margin-bottom: 20px;
+      min-height: 1.2em; /* Always takes at least one line of space */
     }
-    .keyboard {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 10px;
-    }
-    .keyboard-row {
-      display: flex;
-      justify-content: center;
-      gap: 5px;
-    }
-    .key {
-      padding: 10px;
-      font-size: 20px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 20%;
-      cursor: pointer;
-      width: 40px;
-    }
+#keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow-x: hidden; /* prevent wrapping and scroll */
+  width: 100%;
+}
+
+.key {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 7vw; /* Responsive sizing */
+  padding: 1.5vw;
+  width: 8vw;
+  height: 11vw;
+  text-align: center;
+  border-radius: 6px;
+  border: none;
+  background: #e1e1e1;
+  box-shadow: 0 2px 4px rgba(0,0,0,0);
+}
     .btn {
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
       margin-top: 20px;
       padding: 10px 20px;
-      font-size: 18px;
+      font-size: 6vw;
       cursor: pointer;
+      text-align: center;
+      border-radius: 6px;
+      border: none;
+      background: #e1e1e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     #game-over {
       display: none;
       font-size: 28px;
-      color: red;
+      color: rgb(155, 9, 9);
       margin-top: 20px;
     }
+    #restartButton {
+      margin-top: 20px;
+      font-size: 30px;
+    }
+
+    
   </style>
 </head>
 <body>
   <div class="score-timer">
-    <div>⏱ <span id="timer">60</span>s</div>
+    <div>⏱ <span id="timer"></span></div>
     <div>⭐ <span id="score">0</span></div>
   </div>
   <div class="emoji" id="emoji"></div>
@@ -109,7 +137,9 @@
   <div class="keyboard" id="keyboard"></div>
   <button class="btn" onclick="handleBackspace()">⌫ Backspace</button>
   <button class="btn" onclick="skipWord()">Skip ⏭</button>
-  <div id="game-over">انتهى الوقت! <button onclick="resetGame()">العب مجددًا</button></div>
+  <div id="game-over">انتهى الوقت - Game Over<button class="btn" onclick="resetGame()">العب مجددًا - Play Again</button></div>
+
+  <div id="history" style="margin-top: 20px; text-align: center;"></div>
 
   <audio id="correctSound" src="correct-6033.mp3"></audio>
 
@@ -127,9 +157,9 @@
       { word: "ذئب", emoji: "🐺", latin: "thi’b" },
       { word: "ثعلب", emoji: "🦊", latin: "tha’lab" },
       { word: "دب", emoji: "🐻", latin: "dubb" },
-      { word: "نحل", emoji: "🐝", latin: "nahlah" },
+      { word: "نحل", emoji: "🐝", latin: "nahl" },
       { word: "سلحفاة", emoji: "🐢", latin: "sulhufah" },
-      { word: "سمك", emoji: "🐟", latin: "samakah" },
+      { word: "سمك", emoji: "🐟", latin: "samak" },
       { word: "حوت", emoji: "🐋", latin: "hoot" },
       { word: "دولفين", emoji: "🐬", latin: "dawlfyn" },
       { word: "حصان", emoji: "🐎", latin: "hisan" },
@@ -149,9 +179,9 @@
     ];
 
     const keyboardLayout = [
-      ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح", "ج", "د"],
+      ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح", "ج"],
       ["ش", "س", "ي", "ب", "ل", "ا", "ت", "ن", "م", "ك", "ط"],
-      ["ئ", "ء", "ؤ", "ر", "لا", "ى", "ة", "و", "ز", "ظ"]
+      ["ذ", "ئ", "ء", "ؤ", "ر", "ى", "ة", "و", "ز", "ظ", "د"]
     ];
 
     let currentIndex = Math.floor(Math.random() * words.length);
@@ -228,6 +258,7 @@
         inputDisplay.textContent = input;
         if (input === currentWord) {
           correctSound.play();
+          addToHistory(currentWord.word, words[currentIndex].latin, words[currentIndex].emoji);
           score += currentWord.length;
           scoreEl.textContent = score;
           transliterationDisplay.textContent = words[currentIndex].latin;
@@ -272,11 +303,22 @@
         hex.classList.add("filled");
         hex.textContent = currentWord.word[idx];
       });
+      addToHistory(currentWord.word, words[currentIndex].latin, words[currentIndex].emoji);
       setTimeout(() => {
         input = "";
         currentIndex = Math.floor(Math.random() * words.length);
         displayWord();
       }, 1000);
+    }
+
+    function addToHistory(arabicWord, latinWord, emoji) {
+      const historyEl = document.getElementById("history");
+      const entry = document.createElement("div");
+      entry.innerHTML = `<span style="font-size: 24px;">${emoji}</span> 
+                        <span style="font-size: 28px;">${arabicWord}</span> 
+                        <span style="font-size: 28px; color: gray;">(${latinWord})</span>`;
+      entry.style.margin = "10px 0";
+      historyEl.prepend(entry); // Adds to the top of the history list
     }
 
     function resetGame() {
