@@ -31,9 +31,9 @@ const themes = [
       "dove 🕊️", "eagle 🦅", "duck 🦆", "swan 🦢", "owl 🦉", "dodo 🦤",
       "feather 🪶", "flamingo 🦩", "peacock 🦚", "parrot 🦜", "frog 🐸",
       "crocodile 🐊", "turtle 🐢", "lizard 🦎", "snake 🐍", "dragon 🐉",
-      "dragon face 🐲", "sauropod 🦕", "t-rex 🦖", "spouting-whale 🐳",
+      "dragon 🐲", "sauropod 🦕", "t-rex 🦖", "spouting-whale 🐳",
       "whale 🐋", "dolphin 🐬", "fish 🐟", "tropical-fish 🐠", "blowfish 🐡",
-      "shark 🦈", "octopus 🐙", "spiral shell 🐚", "snail 🐌", "butterfly 🦋",
+      "shark 🦈", "octopus 🐙", "spiral-shell 🐚", "snail 🐌", "butterfly 🦋",
       "bug 🐛", "ant 🐜", "bee 🐝", "beetle 🪲", "cricket 🦗", "cockroach 🪳",
       "spider 🕷️", "spider-web 🕸️", "scorpion 🦂", "mosquito 🦟", "fly 🪰",
       "worm 🪱", "microbe 🦠"

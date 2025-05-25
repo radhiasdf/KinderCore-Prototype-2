@@ -369,7 +369,7 @@ function reset() {
   tower = [];
   verticalOffset = 0;
   level = 1;
-  timeLeft = 2;
+  timeLeft = 60;
   score = 0;
   question = {};
 
