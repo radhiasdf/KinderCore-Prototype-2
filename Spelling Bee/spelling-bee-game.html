@@ -257,7 +257,9 @@
 
     const container = document.getElementById("theme-container");
 
-    let selectedThemes = JSON.parse(localStorage.getItem("selectedThemes")) || [];
+    let selectedThemes = JSON.parse(localStorage.getItem("selectedThemes")) || [0, 1, 2];
+
+    console.log(selectedThemes);
 
     function saveSelection() {
       localStorage.setItem("selectedThemes", JSON.stringify(selectedThemes));
