@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KinderCore Leaderboard</title>
+  <link rel="icon" href="icons/favicon.png" type="image/png">
   <link rel="stylesheet" href="style.css" />
 
   <style>
@@ -97,6 +98,14 @@
       font-size: 1rem;
     }
 
+    .name-prompt select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        flex: 1;
+    }
+
     .hidden {
       display: none;
     }
@@ -113,19 +122,25 @@
 
   <div class="container" id="leaderboardContainer"></div>
 
+
 <script>
     const deviceId = localStorage.getItem('deviceId') || crypto.randomUUID();
     localStorage.setItem('deviceId', deviceId);
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBpuR6e7DNDxCkdhbG9g5y4jshDvc-XaEM",
-    authDomain: "kindercore-leaderboard.firebaseapp.com",
-    projectId: "kindercore-leaderboard",
-    storageBucket: "kindercore-leaderboard.firebasestorage.app",
-    messagingSenderId: "800292504950",
-    appId: "1:800292504950:web:093383fed69be3542b6657",
-    measurementId: "G-F916CR9FTE"
-  };
+    const adjectives = ["Black", "White", "Red", "Blue", "Dark", "Snow", "Fire", "Funny", "Fast", "Brave", "Tiny", "Lazy", "Sneaky", "Cool"];
+    const animals = ["Tiger", "Panda", "Dragon", "Fox", "Koala", "Eagle", "Shark"];
+    const numbers = Array.from({ length: 99 }, (_, i) => i + 1);
+
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBpuR6e7DNDxCkdhbG9g5y4jshDvc-XaEM",
+        authDomain: "kindercore-leaderboard.firebaseapp.com",
+        projectId: "kindercore-leaderboard",
+        storageBucket: "kindercore-leaderboard.firebasestorage.app",
+        messagingSenderId: "800292504950",
+        appId: "1:800292504950:web:093383fed69be3542b6657",
+        measurementId: "G-F916CR9FTE"
+    };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
@@ -190,18 +205,62 @@
         <div id="${game.id}-scores">Loading...</div>
         <div class="your-score">Your Best: <span id="${game.id}-your-score">${game.getLocalScore()}</span></div>
         <div class="name-prompt hidden" id="${game.id}-prompt">
-          <input type="text" id="${game.id}-name" placeholder="Enter your name" />
-          <button class="btn" onclick="submitScore('${game.id}')">Submit</button>
+          <input type="text" id="${game.id}-name" maxlength="20" placeholder="Enter your name" />
         </div>
-        <button class="btn" onclick="showPrompt('${game.id}')">Submit Score</button>
+        <button class="btn" id="${game.id}-btn" data-stage="prompt" onclick="handleSubmitClick('${game.id}')">Submit Your Score</button>
       `;
       container.appendChild(section);
       loadLeaderboard(game.id);
     });
   }
 
-  function showPrompt(gameId) {
-    document.getElementById(`${gameId}-prompt`).classList.remove('hidden');
+  function handleSubmitClick(gameId) {
+    const prompt = document.getElementById(`${gameId}-prompt`);
+    const btn = document.getElementById(`${gameId}-btn`);
+    const stage = btn.getAttribute('data-stage');
+
+    if (stage === 'prompt') {
+      prompt.classList.remove('hidden');
+      btn.setAttribute('data-stage', 'submit');
+    } else if (stage === 'submit') {
+      const nameInput = document.getElementById(`${gameId}-name`);
+      const name = nameInput.value.trim();
+      if (!name || name.length > 20) {
+        alert("Please enter a valid name (max 20 characters).");
+        return;
+      }
+      submitScore(gameId, name);
+    }
+  }
+
+  async function submitScore(gameId, name) {
+    let score = 0;
+    if (gameId.startsWith('arithmetic')) {
+      const difficulty = gameId.split('_')[1]; // easy / medium / hard
+      const scores = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+      score = (scores[difficulty]?.blocks) || 0;
+    } else {
+      score = parseInt(localStorage.getItem(`best${capitalize(gameId)}`), 10) || 0;
+    }
+
+    if (isNaN(score) || score <= 0) {
+      alert("No valid score to submit.");
+      return;
+    }
+
+    const scoreRef = db.collection("leaderboards").doc(gameId).collection("scores").doc(deviceId);
+    await scoreRef.set({
+      name,
+      score,
+      timestamp: Date.now()
+    });
+
+    alert("Score submitted!");
+    document.getElementById(`${gameId}-prompt`).classList.add('hidden');
+    const btn = document.getElementById(`${gameId}-btn`);
+    btn.setAttribute('data-stage', 'prompt');
+    btn.textContent = 'Submit Your Score';
+    loadLeaderboard(gameId);
   }
 
   async function loadLeaderboard(gameId) {
@@ -223,40 +282,6 @@
         entry.innerHTML = `<span>${name}${isYou ? ' (You)' : ''}</span><span>${score}</span>`;
         scoreDiv.appendChild(entry);
     });
-  }
-
-  async function submitScore(gameId) {
-    const nameInput = document.getElementById(`${gameId}-name`);
-    const name = nameInput.value.trim();
-
-    if (!name || name.length > 20) {
-      alert("Please enter a valid name (max 20 characters).");
-      return;
-    }
-
-    let score = 0;
-    if (gameId.startsWith('arithmetic')) {
-      const difficulty = gameId.split('_')[1]; // easy / medium / hard
-      const scores = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
-      score = (scores[difficulty]?.blocks) || 0;
-    } else {
-      score = parseInt(localStorage.getItem(`best${capitalize(gameId)}`), 10) || 0;
-    }
-
-    if (isNaN(score) || score <= 0) {
-      alert("No valid score to submit.");
-      return;
-    }
-
-    const scoreRef = db.collection("leaderboards").doc(gameId).collection("scores").doc(deviceId);
-    await scoreRef.set({
-        name,
-        score,
-        timestamp: Date.now()
-    });
-    alert("Score submitted!");
-    document.getElementById(`${gameId}-prompt`).classList.add('hidden');
-    loadLeaderboard(gameId);
   }
 
   function capitalize(s) {

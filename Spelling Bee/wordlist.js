@@ -1,35 +1,110 @@
-    const words = [
-      { word: "apple", emoji: "🍎" }, { word: "banana", emoji: "🍌" }, { word: "cat", emoji: "🐱" },
-      { word: "dog", emoji: "🐶" }, { word: "car", emoji: "🚗" }, { word: "sun", emoji: "☀️" },
-      { word: "moon", emoji: "🌙" }, { word: "star", emoji: "⭐" }, { word: "fish", emoji: "🐟" },
-      { word: "book", emoji: "📚" }, { word: "milk", emoji: "🥛" }, { word: "fire", emoji: "🔥" },
-      { word: "cake", emoji: "🎂" }, { word: "gift", emoji: "🎁" }, { word: "rain", emoji: "🌧️" },
-      { word: "snow", emoji: "❄️" }, { word: "tree", emoji: "🌳" }, { word: "frog", emoji: "🐸" },
-      { word: "bird", emoji: "🐦" }, { word: "duck", emoji: "🦆" }, { word: "lion", emoji: "🦁" },
-      { word: "bear", emoji: "🐻" }, { word: "cow", emoji: "🐄" }, { word: "goat", emoji: "🐐" },
-      { word: "bike", emoji: "🚲" }, { word: "bus", emoji: "🚌" }, { word: "ship", emoji: "🚢" },
-      { word: "train", emoji: "🚆" }, { word: "plane", emoji: "✈️" }, { word: "watch", emoji: "⌚" },
-      { word: "phone", emoji: "📱" }, { word: "mouse", emoji: "🖱️" }, { word: "clock", emoji: "⏰" },
-      { word: "heart", emoji: "❤️" }, { word: "candy", emoji: "🍬" }, { word: "bread", emoji: "🍞" },
-      { word: "cheese", emoji: "🧀" }, { word: "egg", emoji: "🥚" }, { word: "pizza", emoji: "🍕" },
-      { word: "burger", emoji: "🍔" }, { word: "sushi", emoji: "🍣" }, { word: "cookie", emoji: "🍪" },
-      { word: "donut", emoji: "🍩" }, { word: "camera", emoji: "📷" }, { word: "tv", emoji: "📺" },
-      { word: "robot", emoji: "🤖" }, { word: "alien", emoji: "👽" }, { word: "crown", emoji: "👑" },
-      { word: "ghost", emoji: "👻" }, { word: "smile", emoji: "😊" }, { word: "laugh", emoji: "😂" },
-      { word: "angry", emoji: "😠" }, { word: "sad", emoji: "😢" }, { word: "sleep", emoji: "😴" },
-      { word: "chair", emoji: "🪑" }, { word: "bed", emoji: "🛏️" }, { word: "lamp", emoji: "💡" },
-      { word: "key", emoji: "🔑" }, { word: "lock", emoji: "🔒" }, { word: "pen", emoji: "🖊️" },
-      { word: "ruler", emoji: "📏" }, { word: "bag", emoji: "👜" }, { word: "shirt", emoji: "👕" },
-      { word: "pants", emoji: "👖" }, { word: "shoe", emoji: "👟" }, { word: "hat", emoji: "🎩" },
-      { word: "glove", emoji: "🧤" }, { word: "ring", emoji: "💍" }, { word: "soap", emoji: "🧼" },
-      { word: "tooth", emoji: "🦷" }, { word: "nail", emoji: "💅" }, { word: "hand", emoji: "✋" },
-      { word: "foot", emoji: "🦶" }, { word: "eye", emoji: "👁️" }, { word: "ear", emoji: "👂" },
-      { word: "nose", emoji: "👃" }, { word: "hair", emoji: "💇" }, { word: "head", emoji: "🧑" },
-      { word: "baby", emoji: "👶" }, { word: "mom", emoji: "👩" }, { word: "dad", emoji: "👨" },
-      { word: "family", emoji: "👨‍👩‍👧‍👦" }, { word: "teacher", emoji: "🧑‍🏫" }, { word: "doctor", emoji: "🧑‍⚕️" },
-      { word: "nurse", emoji: "👩‍⚕️" }, { word: "pilot", emoji: "👨‍✈️" }, { word: "chef", emoji: "👨‍🍳" },
-      { word: "farmer", emoji: "👩‍🌾" }, { word: "police", emoji: "👮" }, { word: "fireman", emoji: "👨‍🚒" },
-      { word: "clown", emoji: "🤡" }, { word: "dancer", emoji: "💃" }, { word: "singer", emoji: "🎤" },
-      { word: "artist", emoji: "🎨" }, { word: "writer", emoji: "✍️" }, { word: "king", emoji: "🤴" },
-      { word: "queen", emoji: "👸" }, { word: "prince", emoji: "🤴" }, { word: "princess", emoji: "👸" }
-    ];
+const themes = [
+  {
+    name: "Fruits",
+    emoji: "🍎",
+    words: [
+      "apple 🍎", "green apple 🍏", "pear 🍐", "peach 🍑",
+      "cherries 🍒", "strawberry 🍓", "blueberries 🫐", "kiwi 🥝",
+      "tomato 🍅", "olive 🫒", "coconut 🥥", "avocado 🥑",
+      "mango 🥭", "pineapple 🍍", "banana 🍌", "melon 🍈",
+      "watermelon 🍉", "grapes 🍇", "grapefruit 🍊", "lemon 🍋",
+      "lime 🟢", "plum 🟣", "apricot 🟠"
+    ]
+  },
+  {
+    name: "Animals",
+    emoji: "🐶",
+    words: [
+      "monkey 🐒", "gorilla 🦍", "orangutan 🦧", "dog 🐶", "dog 🐕",
+      "guide-dog 🦮", "service-dog 🐕‍🦺", "poodle 🐩", "wolf 🐺", "fox 🦊",
+      "raccoon 🦝", "cat 🐱", "cat 🐈", "black-cat 🐈‍⬛", "lion 🦁", "tiger 🐯",
+      "tiger 🐅", "leopard 🐆", "horse 🐴", "horse 🐎", "unicorn 🦄",
+      "zebra 🦓", "deer 🦌", "bison 🦬", "cow 🐮", "ox 🐂", "water-buffalo 🐃",
+      "pig 🐷", "boar 🐗", "pig-nose 🐽", "ram 🐏", "ewe 🐑", "goat 🐐",
+      "two-hump-camel 🐫", "camel 🐪", "llama 🦙", "giraffe 🦒", "elephant 🐘",
+      "mammoth 🦣", "rhinoceros 🦏", "hippopotamus 🦛", "mouse 🐭", "mouse 🐁",
+      "rat 🐀", "hamster 🐹", "rabbit 🐰", "bunny 🐇", "chipmunk 🐿️",
+      "beaver 🦫", "hedgehog 🦔", "bat 🦇", "bear 🐻", "polar-bear 🐻‍❄️",
+      "koala 🐨", "panda 🐼", "sloth 🦥", "otter 🦦", "skunk 🦨", "kangaroo 🦘",
+      "badger 🦡", "turkey 🦃", "chicken 🐔", "rooster 🐓", "hatching-chick 🐣",
+      "chick 🐤", "bird 🐦", "penguin 🐧",
+      "dove 🕊️", "eagle 🦅", "duck 🦆", "swan 🦢", "owl 🦉", "dodo 🦤",
+      "feather 🪶", "flamingo 🦩", "peacock 🦚", "parrot 🦜", "frog 🐸",
+      "crocodile 🐊", "turtle 🐢", "lizard 🦎", "snake 🐍", "dragon 🐉",
+      "dragon face 🐲", "sauropod 🦕", "t-rex 🦖", "spouting-whale 🐳",
+      "whale 🐋", "dolphin 🐬", "fish 🐟", "tropical-fish 🐠", "blowfish 🐡",
+      "shark 🦈", "octopus 🐙", "spiral shell 🐚", "snail 🐌", "butterfly 🦋",
+      "bug 🐛", "ant 🐜", "bee 🐝", "beetle 🪲", "cricket 🦗", "cockroach 🪳",
+      "spider 🕷️", "spider-web 🕸️", "scorpion 🦂", "mosquito 🦟", "fly 🪰",
+      "worm 🪱", "microbe 🦠"
+    ]
+  },
+  {
+    name: "Transport",
+    emoji: "🚗",
+    words: [
+      "car 🚗", "bus 🚌", "train 🚆", "airplane ✈️", "motorbike 🏍️",
+      "spaceship 🚀", "bicycle 🚲", "helicopter 🚁", "boat 🚢", "submarine 🛳️",
+      "scooter 🛵", "tram 🚋", "taxi 🚕", "truck 🚚", "van 🚐"
+    ]
+  },
+  {
+    name: "Weather",
+    emoji: "☀️",
+    words: [
+      "sunshine ☀️", "rain 🌧️", "lightning 🌩️", "snowfall ❄️", "cloud ☁️",
+      "wind 🌬️", "storm 🌪️", "fog 🌫️", "hail 🌨️", "drizzle 🌦️"
+    ]
+  },
+  {
+    name: "Professions",
+    emoji: "👩‍⚕️",
+    words: [
+      "doctor 🧑‍⚕️", "nurse 👩‍⚕️", "scientist 👩‍🔬", "astronaut 👨‍🚀", "engineer 👷",
+      "firefighter 👨‍🚒", "teacher 🧑‍🏫", "pilot 👨‍✈️", "chef 👨‍🍳", "farmer 👩‍🌾",
+      "police 👮", "artist 🎨", "writer ✍️", "dancer 💃", "singer 🎤"
+    ]
+  },
+  {
+    name: "Food",
+    emoji: "🍕",
+    words: [
+      "hamburger 🍔", "sandwich 🥪", "spaghetti 🍝", "chocolate 🍫", "doughnut 🍩",
+      "pizza 🍕", "sushi 🍣", "cookie 🍪", "bread 🍞", "cheese 🧀",
+      "egg 🥚", "cake 🎂", "icecream 🍨", "salad 🥗", "steak 🥩"
+    ]
+  },
+  {
+    name: "Clothes",
+    emoji: "👕",
+    words: [
+      "sweater 🧥", "sneakers 👟", "glasses 👓", "necklace 📿", "backpack 🎒",
+      "shirt 👕", "pants 👖", "hat 🎩", "glove 🧤", "ring 💍",
+      "scarf 🧣", "jacket 🧥", "boots 👢", "dress 👗", "tie 👔"
+    ]
+  },
+  {
+    name: "Emotions",
+    emoji: "😊",
+    words: [
+      "surprise 😲", "happiness 😀", "laughter 😂", "sadness 😢", "anger 😠",
+      "love ❤️", "fear 😱", "boredom 😐", "excitement 🤩", "confusion 😕"
+    ]
+  },
+  {
+    name: "Colors",
+    emoji: "🎨",
+    words: [
+      "red 🔴", "blue 🔵", "green 🟢", "yellow 🟡", "purple 🟣",
+      "orange 🟠", "pink 🌸", "brown 🟤", "black ⚫", "white ⚪"
+    ]
+  },
+  {
+    name: "Body Parts",
+    emoji: "🧍",
+    words: [
+      "head 🧠", "eye 👁️", "ear 👂", "nose 👃", "mouth 👄",
+      "hand ✋", "foot 🦶", "leg 🦵", "arm 💪", "back 🧍‍♂️"
+    ]
+  }
+];

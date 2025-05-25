@@ -15,6 +15,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spelling Bee Game</title>
+  <link rel="icon" href="../icons/spellingbeeicon.png" type="image/png">
+
+  <link rel="stylesheet", href="../back-button.css">
   <style>
     body {
       font-family: sans-serif;
@@ -27,7 +30,16 @@
       margin: 0;
       padding: 1rem;
     }
-    .hexagon {
+    
+    #gameArea {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 1rem;
+    }
+    .hex {
       width: 50px;
       height: 50px;
       background: white;
@@ -42,6 +54,12 @@
     .filled {
       background: orange;
       color: white;
+    }
+    .hex-space {
+      width: 40px; /* same size as .hex */
+      height: 40px;
+      margin: 4px;
+      display: inline-block;
     }
     #highScore {
       font-size: 1rem;
@@ -91,53 +109,120 @@
       width: 80%;
       max-width: 400px;
       text-align: center;
+      border-radius: 8px;
+      border-color: grey;
+      border-style: solid;
     }
     select, button {
       margin-top: 1rem;
       font-size: 1.3em;
       padding: 0.4em 0.8em;
     }
+    .back-button {
+      position: absolute;
+      background-color: darkorange !important;
+      color: white;
+      font-weight: bold;
+    }
+
+    #theme-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card.selected {
+      background: #d4f5d4;
+      border: 2px solid #4caf50;
+    }
+
+    .emoji {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .label {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
 
   </style>
+  
 </head>
 <body>
+  <div id="empty-box">
+    <button class="back-button" onclick="window.history.length > 1 ? history.back() : window.location.href='index.html'">
+      ⬅ Back
+    </button>
+  </div>
+
+
   <h1>Spelling Bee Game</h1>
-   <div id="highScore">High Score: <span id="highScoreValue">0</span></div>
+  <div id="highScore">High Score: <span id="highScoreValue">0</span></div>
   
-  <div id="gameOver">
-    <h2>Game Over</h2>
-    <p>Your score: <span id="finalScore"></span></p>
-    <button onclick="restartGame()">Play Again</button>
+  <div id="startScreen">
+    <button id="startButton">Start Game</button>
   </div>
+  
 
-  <div style="display: flex; align-items: center; gap: 50px">
-    <div class="score-icon">
-      <svg viewBox="0 0 24 24"><polygon points="12,2 22,9 22,21 12,22 2,21 2,9"/></svg>
-      <span id="score">0</span>
+  <div id="gameArea">
+    <div id="gameOver">
+      <h2>Game Over</h2>
+      <p>Your score: <span id="finalScore"></span></p>
+      <button onclick="restartGame()">Play Again</button>
     </div>
-    <div class="score-icon">
-  ⏱️ <span id="timer">Time: 60</span>
+    
+    <div style="display: flex; align-items: center; gap: 50px">
+      <div class="score-icon">
+        <svg viewBox="0 0 24 24">
+          <polygon points="12,2 22,9 22,21 12,22 2,21 2,9" />
+        </svg>
+        <span id="score">0</span>
+      </div>
+      <div class="score-icon">
+        ⏱️ <span id="timer">Time: 60</span>
+      </div>
     </div>
+    
+    
+    <div id="hintImage" style="font-size: 5rem;">🔤</div>
+    <div class="hex-container" id="hexContainer"></div>
+    <input type="text" id="wordInput" placeholder="Type the word..." />
+    <button id="skipButton">Skip</button>
   </div>
+  
 
 
-  <div id="hintImage" style="font-size: 5rem;">🔤</div>
-  <div class="hex-container" id="hexContainer"></div>
-  <input type="text" id="wordInput" placeholder="Type the word..." />
-  <button id="skipButton">Skip</button>
 
   <select id="difficulty">
     <option value="easy">Easy</option>
     <option value="medium">Medium</option>
     <option value="hard">Hard</option>
   </select>
-  <!-- <select id="languageSelect">
-    <option value="en">English</option>
-    <option value="ar">العربية</option>
-  </select> -->
 
-  <div id="arabicKeyboard" class="keyboard" style="display: none;"></div>
-
+  <h1>Select Themes to Practice</h1>
+  <div id="theme-container"></div>
 
   <audio id="correctSound" src="correct-6033.mp3"></audio>
 
@@ -167,24 +252,97 @@
 
     highScoreDisplay.textContent = highScore;
 
-    function loadWord() {
-      let filteredWords = words.filter(w => {
-        const len = w.word.length;
-        if (difficultySelect.value === 'easy') return len <= 4;
-        if (difficultySelect.value === 'medium') return len > 4 && len <= 6;
-        return len > 6;
-      });
-      const random = Math.floor(Math.random() * filteredWords.length);
-      const { word, emoji } = filteredWords[random];
-      currentIndex = words.findIndex(w => w.word === word);
-      hintImage.textContent = emoji;
-      hexContainer.innerHTML = '';
-      for (let i = 0; i < word.length; i++) {
-        const hex = document.createElement('div');
-        hex.classList.add('hexagon');
-        hexContainer.appendChild(hex);
-      }
+    /////////////////// THEMES AND WORDS //////////////////////////////////
+    
+
+    const container = document.getElementById("theme-container");
+
+    let selectedThemes = JSON.parse(localStorage.getItem("selectedThemes")) || [];
+
+    function saveSelection() {
+      localStorage.setItem("selectedThemes", JSON.stringify(selectedThemes));
     }
+
+    function renderThemes() {
+      container.innerHTML = "";
+      themes.forEach((theme, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        if (selectedThemes.includes(index)) card.classList.add("selected");
+
+        card.innerHTML = `
+          <div class="emoji">${theme.emoji}</div>
+          <div class="label">${theme.name}</div>
+        `;
+
+        card.addEventListener("click", () => {
+          if (selectedThemes.includes(index)) {
+            selectedThemes = selectedThemes.filter(i => i !== index);
+          } else {
+            selectedThemes.push(index);
+          }
+          saveSelection();
+          renderThemes();
+          generateWordPool();
+          loadWord(); // reload word from updated list
+        });
+
+
+        container.appendChild(card);
+      });
+    }
+
+    let words = [];
+
+    function generateWordPool() {
+      words = [];
+      selectedThemes.forEach(index => {
+        const theme = themes[index];
+        theme.words.forEach(entry => {
+          const [word, emoji] = entry.split(' ');
+          words.push({ word, emoji });
+        });
+      });
+    }
+
+      function loadWord() {
+        let filteredWords = words.filter(w => {
+          const cleanWord = w.word.replace(/[^a-zA-Z- ]/g, ''); // Remove non-letter characters, keeping spaces and dashes
+          const len = cleanWord.replace(/-/g, ' ').length; // Adjust length to treat dashes as spaces
+          if (difficultySelect.value === 'easy') return len <= 4;
+          if (difficultySelect.value === 'medium') return len > 4 && len <= 6;
+          return len > 6;
+        });
+
+        if (filteredWords.length === 0) {
+          hintImage.textContent = '❓';
+          hexContainer.innerHTML = '<div class="message">No words for this difficulty</div>';
+          return;
+        }
+
+        const random = Math.floor(Math.random() * filteredWords.length);
+        const { word, emoji } = filteredWords[random];
+        currentIndex = words.findIndex(w => w.word === word);
+        hintImage.textContent = emoji;
+        hexContainer.innerHTML = '';
+
+        // Replace dashes with spaces for hexagon display
+        const displayWord = word.replace(/-/g, ' '); // Replace dashes with spaces
+
+        // Create hexagons for the word with spaces
+        for (let char of displayWord) {
+          const hex = document.createElement('div');
+          if (char === ' ') {
+            hex.classList.add('hex-space');
+            hex.style.visibility = 'hidden'; // Hide space hexagons
+          } else {
+            hex.classList.add('hex');
+          }
+          hexContainer.appendChild(hex);
+        }
+      }
+
+
 
     wordInput.addEventListener('input', () => {
       const input = wordInput.value.toLowerCase();
@@ -196,7 +354,7 @@
         else hexes[i].classList.remove('filled');
       }
 
-      if (input === currentWord) {
+      if (input === currentWord.replace(/-/g, ' ')) {
         correctSound.play();
         Array.from(hexes).forEach(hex => hex.classList.add('fly'));
         setTimeout(() => {
@@ -251,21 +409,31 @@
       countdown();
     }
 
-    function generateArabicKeyboard() {
-      const container = document.getElementById("arabicKeyboard");
-      container.innerHTML = '';
-      arabicLetters.forEach(letter => {
-        const btn = document.createElement("button");
-        btn.textContent = letter;
-        btn.onclick = () => {
-          inputBox.value += letter;
-        };
-        container.appendChild(btn);
-      });
-}
+    const startScreen = document.getElementById('startScreen');
+      const startButton = document.getElementById('startButton');
+      const gameArea = document.getElementById('gameArea');
 
-    loadWord();
-    countdown();
+      startButton.addEventListener('click', () => {
+        startScreen.style.display = 'none';
+        gameArea.style.display = 'flex';
+        startGame();
+      });
+
+      function startGame() {
+        score = 0;
+        timeLeft = 60;
+        scoreDisplay.textContent = 0;
+        timer.textContent = `Time: ${timeLeft}`;
+        wordInput.disabled = false;
+        document.getElementById('skipButton').disabled = false;
+        wordInput.value = '';
+        gameOverScreen.style.display = 'none';
+        generateWordPool();
+        loadWord();
+        countdown();
+      }
+
+      renderThemes();
   </script>
 </body>
 </html>

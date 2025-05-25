@@ -1,0 +1,15 @@
+button.back-button {
+  top: 1rem;
+  left: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  text-align: center;
+  z-index: 1001; /* higher than overlay */
+  border: none;
+}
+
+button.back-button:hover{
+  background-color: rgb(255, 255, 255);
+}

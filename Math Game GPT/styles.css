@@ -8,6 +8,11 @@ canvas {
   display: block;
   background: linear-gradient(#87ceeb, #87ceeb);
 }
+
+.back-button { /*Overrides the back button template in root directory*/
+  position: absolute;
+}
+
 #ui {
   position: absolute;
   top: 10px;
@@ -58,32 +63,38 @@ input {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 1000;
 }
 
-.game-over-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
+.game-over-content,
+#welcomeBox {
+  background: rgba(255, 255, 255, 0.8); /* semi-transparent */
+  padding: 1.5em;
+  border-radius: 8px;
   text-align: center;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* match #ui */
+  max-width: 90%;
+  font-size: 1.2rem;
 }
 
-.game-over-content h2 {
-  font-size: 36px;
-  margin-bottom: 10px;
+.game-over-content h2,
+#welcomeBox h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: rgb(9, 2, 70); /* consistent heading color */
 }
 
-.game-over-content p {
-  font-size: 25px;
-  margin-bottom: 20px;
+.game-over-content p,
+#welcomeBox p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: rgb(9, 2, 70);
 }
 
-#restartButton {
+#restartButton, #welcomeCloseButton {
   padding: 10px 20px;
   font-size: 18px;
   background-color: #28a745;
@@ -93,7 +104,7 @@ input {
   cursor: pointer;
 }
 
-#restartButton:hover {
+#restartButton:hover, #welcomeCloseButton{
   background-color: #218838;
 }
 
@@ -103,43 +114,8 @@ input {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(15, 15, 40, 0.9);
-  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
-}
-
-#welcomeBox {
-  background: #222;
-  padding: 20px 20px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 0 20px #000;
-  max-width: 90%;
-}
-
-#welcomeBox h1 {
-  font-size: 38px;
-  margin-bottom: 20px;
-}
-
-#welcomeBox p {
-  font-size: 24px;
-  line-height: 1.5;
-}
-
-#welcomeCloseButton {
-  margin-top: 30px;
-  padding: 12px 24px;
-  font-size: 28px;
-  border: none;
-  border-radius: 10px;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-}
-#welcomeCloseButton:hover {
-  background-color: #45a049;
+  z-index: 1000;
 }

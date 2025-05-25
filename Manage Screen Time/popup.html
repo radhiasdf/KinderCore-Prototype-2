@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Screen Time Settings</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Screen Time Settings</h1>
+  <form id="addForm">
+    <input type="text" id="domainInput" placeholder="example.com" required />
+    <input type="number" id="limitInput" placeholder="Minutes" min="1" required />
+    <button type="submit">Add Limit</button>
+  </form>
+  <h2>Limits</h2>
+  <ul id="limitList"></ul>
+  <h2>Usage History</h2>
+  <ul id="usageList"></ul>
+  <a href="full.html" target="_blank">Open Full Page</a>
+  <script src="popup.js"></script>
+</body>
+</html>
