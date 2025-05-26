@@ -73,7 +73,8 @@
       margin-top: 2rem;
     }
     #gameOver h2 {
-      color: #c00;
+      color: rgb(226, 94, 0);
+      font-weight: bold;
     }
     .score-icon {
       display: inline-flex;
@@ -282,12 +283,6 @@
   
 <!-- /////////////////////////////// NOT VISIBLE AT START ///////////////////////////// -->
   <div id="gameArea"> 
-    <div id="gameOver">
-      <h2>Game Over</h2>
-      <p>Your score: <span id="finalScore"></span></p>
-      <button id="startButton" onclick="startGame()">Play Again</button>
-    </div>
-    
     <div style="display: flex; align-items: center; gap: 50px">
       <div class="score-icon">
         <svg viewBox="0 0 24 24">
@@ -305,6 +300,11 @@
     <div class="hex-container" id="hexContainer"></div>
     <input type="text" id="wordInput" placeholder="Type the word..." />
     <button id="skipButton">Skip</button>
+    <div id="gameOver">
+      <h2>Game Over</h2>
+      <p>Your score: <span id="finalScore"></span></p>
+      <button id="startButton" onclick="startGame()">Play Again</button>
+    </div>
   </div>
 
   <select id="difficulty">
@@ -489,17 +489,8 @@
     //////////////////////////////////// SKIP //////////////////////////////////
 
     document.getElementById('skipButton').addEventListener('click', () => {
-        const { emoji, word } = words[currentIndex];
-        addToHistory(`${emoji} ${word}`);
-
         // Show the word in the hexagons
-        const hexes = hexContainer.children;
-        const displayWord = word.replace(/-/g, ' '); // match hex layout
-        for (let i = 0; i < hexes.length; i++) {
-          const char = displayWord[i];
-          hexes[i].textContent = char ? char.toUpperCase() : '';
-          if (char && char !== ' ') hexes[i].classList.add('filled');
-        }
+        revealWord();
 
         // Wait 1 second, then load the next word
         setTimeout(() => {
@@ -520,9 +511,23 @@
       }, 1000);
     }
 
+    function revealWord(){
+      const { emoji, word } = words[currentIndex];
+      addToHistory(`${emoji} ${word}`);
+
+      const hexes = hexContainer.children;
+      const displayWord = word.replace(/-/g, ' '); // match hex layout
+      for (let i = 0; i < hexes.length; i++) {
+        const char = displayWord[i];
+        hexes[i].textContent = char ? char.toUpperCase() : '';
+        if (char && char !== ' ') hexes[i].classList.add('filled');
+      }
+    }
+
     function endGame() {
+      revealWord();
       wordInput.disabled = true;
-      document.getElementById('skipButton').disabled = true;
+      document.getElementById('skipButton').hidden = true;
       gameOverScreen.style.display = 'block';
       finalScoreDisplay.textContent = score;
     }
@@ -543,7 +548,7 @@
         scoreDisplay.textContent = 0;
         timer.textContent = `Time: ${timeLeft}`;
         wordInput.disabled = false;
-        document.getElementById('skipButton').disabled = false;
+        document.getElementById('skipButton').hidden = false;
         wordInput.value = '';
         gameOverScreen.style.display = 'none';
         generateWordPool();
