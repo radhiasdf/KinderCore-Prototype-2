@@ -20,7 +20,7 @@
   <link rel="stylesheet", href="../back-button.css">
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
       background: #fffbea;
       display: flex;
       flex-direction: column;
@@ -39,6 +39,8 @@
       margin: 0;
       padding: 1rem;
     }
+/* //////////////////////////// HEXAGONS ///////////////////////////// */
+
     .hex {
       width: 50px;
       height: 50px;
@@ -125,6 +127,33 @@
       font-weight: bold;
     }
 
+    .back-button:hover {
+      background-color: rgb(255, 195, 84) !important;
+    }
+
+    #startButton, #difficulty, #skipButton{
+      background: #ffffff;
+      border-radius: 16px;
+      font-size: 16px;
+      padding: 10px 20px;
+    }
+
+    #skipButton {
+      font-weight: bold;
+    }
+
+    #startButton, #restartButton {
+      background: #d4f5d4;
+      border: 2px solid #4caf50;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      font-weight: bold;
+    }
+
+    #startButton:hover {
+      transform: scale(1.05);
+    }
+
+
     #theme-container {
       display: flex;
       flex-wrap: wrap;
@@ -166,6 +195,72 @@
       font-size: 16px;
     }
 
+    /* ////////////////////////// WORD HISTORY ////////////////////////////////// */
+        /* Basic styles */
+    #menu-button {
+      position: fixed;
+      top: 0px;
+      right: 10px; /* moved from left */
+      z-index: 1001;
+      font-size: 24px;
+      background: rgb(255, 136, 0);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 12px;
+    }
+
+    #sidebar {
+      position: fixed;
+      top: 0;
+      right: -260px; /* changed from left */
+      width: 240px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.3); /* shadow on left */
+      padding: 16px;
+      box-sizing: border-box;
+      transition: right 0.3s ease; /* changed from left */
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    #sidebar.show {
+      right: 0; /* slide in from right */
+    }
+
+    #backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+      display: none;
+    }
+
+    #backdrop.show {
+      display: block;
+    }
+
+    #history-list {
+      margin-top: 12px;
+      list-style: none;
+      padding-left: 0;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .empty {
+      color: #888;
+      font-style: italic;
+    }
+
+    #history-list li {
+      border-bottom: 1px solid #ccc;
+      padding: 8px 0;
+    }
+
 
   </style>
   
@@ -173,7 +268,7 @@
 <body>
   <div id="empty-box">
     <button class="back-button" onclick="window.history.length > 1 ? history.back() : window.location.href='index.html'">
-      ⬅ Back
+      ✖
     </button>
   </div>
 
@@ -185,12 +280,12 @@
     <button id="startButton">Start Game</button>
   </div>
   
-
-  <div id="gameArea">
+<!-- /////////////////////////////// NOT VISIBLE AT START ///////////////////////////// -->
+  <div id="gameArea"> 
     <div id="gameOver">
       <h2>Game Over</h2>
       <p>Your score: <span id="finalScore"></span></p>
-      <button onclick="restartGame()">Play Again</button>
+      <button id="startButton" onclick="startGame()">Play Again</button>
     </div>
     
     <div style="display: flex; align-items: center; gap: 50px">
@@ -211,9 +306,6 @@
     <input type="text" id="wordInput" placeholder="Type the word..." />
     <button id="skipButton">Skip</button>
   </div>
-  
-
-
 
   <select id="difficulty">
     <option value="easy">Easy</option>
@@ -226,9 +318,26 @@
 
   <audio id="correctSound" src="correct-6033.mp3"></audio>
 
+  <!--////////////////////////////////// WORD HISTORY //////////////////////////////-->
+  <button id="menu-button">☰</button>
+  
+  <!-- Sidebar for Word History -->
+  <div id="sidebar">
+    <h2>Word History</h2>
+    <ul id="history-list">
+      <li id="empty-message" class="empty">No words yet</li>
+    </ul>    
+  </div>
+  
+  <!-- Optional backdrop to close menu -->
+  <div id="backdrop"></div>
+
   <script src="wordlist.js"></script>
 
+
   <script>
+
+  ///////////////////////////// SCRIPT ////////////////////////////////////////
 
     let score = 0;
     let highScore = parseInt(localStorage.getItem('bestSpelling')) || 0;
@@ -344,7 +453,7 @@
         }
       }
 
-
+    ////////////////////////// ENTERING LETTERS /////////////////////////////
 
     wordInput.addEventListener('input', () => {
       const input = wordInput.value.toLowerCase();
@@ -358,6 +467,8 @@
 
       if (input === currentWord.replace(/-/g, ' ')) {
         correctSound.play();
+        addToHistory(`${words[currentIndex].emoji} ${currentWord}`);
+
         Array.from(hexes).forEach(hex => hex.classList.add('fly'));
         setTimeout(() => {
           score += input.length;
@@ -375,10 +486,28 @@
       }
     });
 
+    //////////////////////////////////// SKIP //////////////////////////////////
+
     document.getElementById('skipButton').addEventListener('click', () => {
-      wordInput.value = '';
-      loadWord();
-    });
+        const { emoji, word } = words[currentIndex];
+        addToHistory(`${emoji} ${word}`);
+
+        // Show the word in the hexagons
+        const hexes = hexContainer.children;
+        const displayWord = word.replace(/-/g, ' '); // match hex layout
+        for (let i = 0; i < hexes.length; i++) {
+          const char = displayWord[i];
+          hexes[i].textContent = char ? char.toUpperCase() : '';
+          if (char && char !== ' ') hexes[i].classList.add('filled');
+        }
+
+        // Wait 1 second, then load the next word
+        setTimeout(() => {
+          wordInput.value = '';
+          loadWord();
+          document.getElementById("wordInput").focus();
+        }, 1000);
+      });
 
     function countdown() {
       countdownInterval = setInterval(() => {
@@ -396,19 +525,6 @@
       document.getElementById('skipButton').disabled = true;
       gameOverScreen.style.display = 'block';
       finalScoreDisplay.textContent = score;
-    }
-
-    function restartGame() {
-      score = 0;
-      timeLeft = 60;
-      wordInput.disabled = false;
-      document.getElementById('skipButton').disabled = false;
-      gameOverScreen.style.display = 'none';
-      wordInput.value = '';
-      scoreDisplay.textContent = 0;
-      timer.textContent = `Time: ${timeLeft}`;
-      loadWord();
-      countdown();
     }
 
     const startScreen = document.getElementById('startScreen');
@@ -433,9 +549,45 @@
         generateWordPool();
         loadWord();
         countdown();
+        document.getElementById("wordInput").focus();
       }
 
       renderThemes();
+
+      /////////////////////////////////////// WORD HISTORY /////////////////////////////////
+      const menuButton = document.getElementById('menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('backdrop');
+        const historyList = document.getElementById('history-list');
+
+        // Open/close sidebar
+        menuButton.addEventListener('click', () => {
+            const isOpen = sidebar.classList.contains('show');
+            if (isOpen) {
+              sidebar.classList.remove('show');
+              backdrop.classList.remove('show');
+            } else {
+              sidebar.classList.add('show');
+              backdrop.classList.add('show');
+            }
+          });
+
+        backdrop.addEventListener('click', () => {
+          sidebar.classList.remove('show');
+          backdrop.classList.remove('show');
+        });
+
+        // Add correct word to history
+        function addToHistory(correctWord) {
+          const emptyMsg = document.getElementById('empty-message');
+          if (emptyMsg) {
+            emptyMsg.remove(); // Remove "No words yet" if present
+          }
+
+          const li = document.createElement('li');
+          li.textContent = correctWord;
+          historyList.prepend(li); // Show newest at top
+        }
   </script>
 </body>
 </html>
