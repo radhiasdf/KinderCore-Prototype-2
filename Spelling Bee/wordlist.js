@@ -406,7 +406,7 @@ const themes = [
     words: [
       "minecraft ⛏️🌍🧱🧟",
       "fortnite 🔫🏗️💃🌪️",
-      "among-us 👨‍🚀🔪🛸🧠",
+      "among-us 👨‍🚀🔪ඞ𐐘🤝ඞ",
       "roblox 👷‍♂️🎨🎮🧒",
       "the-legend-of-zelda 🧝‍♂️🗡️🧩🎵",
       "tears-of-the-kingdom 🪂🏯🧠🧪",

@@ -291,7 +291,7 @@
         <span id="score">0</span>
       </div>
       <div class="score-icon">
-        ⏱️ <span id="timer">Time: 60</span>
+        ⏱️ <span id="timer">Time: 120</span>
       </div>
     </div>
     
@@ -342,7 +342,7 @@
     let score = 0;
     let highScore = parseInt(localStorage.getItem('bestSpelling')) || 0;
     let currentIndex = 0;
-    let timeLeft = 60;
+    let timeLeft = 120;
     let countdownInterval;
     let currentLanguage = "en";
 
@@ -544,7 +544,7 @@
 
       function startGame() {
         score = 0;
-        timeLeft = 60;
+        timeLeft = 120;
         scoreDisplay.textContent = 0;
         timer.textContent = `Time: ${timeLeft}`;
         wordInput.disabled = false;
