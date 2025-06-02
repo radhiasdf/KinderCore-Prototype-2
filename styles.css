@@ -167,33 +167,77 @@ input[type="text"], input[type="password"] {
 }
 /* ///////////////////////////// SURVEY FORM /////////////////////////// */
 
-table.survey-table {
+/* Container styling */
+.table-wrapper {
+    overflow-x: auto;
+    /* scroll horizontally if needed */
+    margin-top: 10px;
+}
+
+/* Survey table basic styling */
+.survey-table {
     border-collapse: collapse;
-    width: 100%;
-    min-width: 600px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    table-layout: fixed;
+    /* fix column widths */
 }
 
-table.survey-table th,
-table.survey-table td {
-    border: 1px solid #ccc;
-    padding: 6px;
-    text-align: center;
-}
-
-table.survey-table th {
+/* Header cells */
+.survey-table thead th {
     background-color: #f0f0f0;
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 2px solid #ccc;
+    font-weight: 600;
+    user-select: none;
 }
 
-table.survey-table td:first-child,
-table.survey-table td:last-child {
+/* Table body cells */
+.survey-table tbody td {
+    padding: 8px 6px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+/* Negative and positive labels in first and last columns */
+.survey-table tbody td:first-child,
+.survey-table tbody td:last-child {
+    width: 50px;
     text-align: left;
-    font-weight: bold;
+    color: #555;
+    user-select: none;
 }
 
-table.survey-table input[type="radio"] {
-    transform: scale(1.1);
-    cursor: pointer;
+/* Center scale radio cells */
+.survey-table tbody td:not(:first-child):not(:last-child) {
+    text-align: center;
+    width: 40px;
+    /* fixed width for radios */
 }
+
+/* Style radios inside the table */
+.survey-table input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    vertical-align: middle;
+    position: static;
+    opacity: 1;
+    margin: 0 auto;
+    display: inline-block;
+}
+
+/* Hover effect on rows */
+.survey-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Highlight the selected radio's cell */
+.survey-table input[type="radio"]:checked+label,
+.survey-table input[type="radio"]:checked {
+    border-radius: 4px; }
 
 /* Mobile cards wrapper */
 .cards-wrapper {
@@ -216,6 +260,8 @@ table.survey-table input[type="radio"] {
     text-align: right;
 }
 
+/* ///////////////////// FOR MOBILE /////////////////////////////////// */
+
 .options-row {
     display: flex;
     justify-content: center;
@@ -232,8 +278,12 @@ table.survey-table input[type="radio"] {
 }
 
 .options-row input[type="radio"] {
-    display: none;
-    /* hide native radio */
+  position: absolute;
+  opacity: 1.0;  /* nearly invisible but focusable */
+  width: 1px;
+  height: 40px;
+  margin: 0;
+  clip: rect(0 0 0 0); /* optional, but be careful with this */
 }
 
 .options-row label {
