@@ -61,7 +61,7 @@ section h2 {
     align-items: center;
 }
 
-.btn {
+.btn , #languageSelect{
     background-color: var(--primary);
     color: white;
     padding: 10px 16px;
@@ -69,6 +69,31 @@ section h2 {
     border-radius: 8px;
     font-size: 0.95rem;
     cursor: pointer;
+}
+
+#languageSelect {
+    text-align: center;
+    justify-content: center;
+    background-color: var(--primary);
+    color: white;
+    height:48px;
+    padding: 16px 20px;
+    /* Bigger padding */
+    border: none;
+    border-radius: 8px;
+    /* Slightly larger font */
+    cursor: pointer;
+    width: 100%;
+    max-width: 500px;
+    /* Full width */
+    box-sizing: border-box;
+    /* Ensures padding doesn't overflow */
+    margin: 10px auto;
+    /* Center if in fixed-width container */
+    display: block;
+    /* Ensure block-level for full width */
+    max-width: none;
+    /* Remove 500px constraint */
 }
 
 .score {
@@ -138,5 +163,108 @@ input[type="text"], input[type="password"] {
     .game-item img {
     width: 1.5cm;
     height: 1.5cm;
+    }
+}
+/* ///////////////////////////// SURVEY FORM /////////////////////////// */
+
+table.survey-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 600px;
+}
+
+table.survey-table th,
+table.survey-table td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+}
+
+table.survey-table th {
+    background-color: #f0f0f0;
+}
+
+table.survey-table td:first-child,
+table.survey-table td:last-child {
+    text-align: left;
+    font-weight: bold;
+}
+
+table.survey-table input[type="radio"] {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+/* Mobile cards wrapper */
+.cards-wrapper {
+    display: none;
+}
+
+.survey-card {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+}
+
+.survey-card p.question {
+    margin-bottom: 8px;
+}
+
+.survey-card div.positive-label {
+    text-align: right;
+}
+
+.options-row {
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.options-row label {
+    flex: 0 0 auto;
+    text-align: center;
+    min-width: 28px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.options-row input[type="radio"] {
+    display: none;
+    /* hide native radio */
+}
+
+.options-row label {
+    display: inline-block;
+    width: 24px;
+    height: 28px;
+    border: 2px solid #444;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    margin: 0 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+    color: #444;
+    font-size: 16px;
+}
+
+.options-row input[type="radio"]:checked+label {
+    background-color: #4a90e2;
+    color: white;
+    border-color: #4a90e2; }
+
+
+/* Responsive behavior */
+@media (max-width: 700px) {
+    .table-wrapper {
+        display: none;
+    }
+
+    .cards-wrapper {
+        display: block;
     }
 }

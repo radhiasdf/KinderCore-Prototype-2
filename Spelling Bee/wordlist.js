@@ -44,8 +44,8 @@ const themes = [
     emoji: "🚗",
     words: [
       // Land Transport
-      "car 🚗", "sport-utility-vehicle 🚙", "bus 🚌", "oncoming-bus 🚍", "trolleybus 🚎",
-      "minibus 🚐", "taxi 🚕", "oncoming-taxi 🚖", "police-car 🚓", "oncoming-police-car 🚔",
+      "car 🚗", "sport-utility-vehicle 🚙", "bus 🚌", "bus 🚍", "trolleybus 🚎",
+      "minibus 🚐", "taxi 🚕", "taxi 🚖", "police-car 🚓", "police-car 🚔",
       "fire-engine 🚒", "ambulance 🚑", "delivery-truck 🚚", "articulated-lorry 🚛",
       "tractor 🚜", "pickup-truck 🛻", "train 🚆", "high-speed-train 🚄", "bullet-train 🚅",
       "light-rail 🚈", "tram 🚋", "mountain-railway 🚞", "railway-car 🚃", "monorail 🚝",
@@ -55,14 +55,14 @@ const themes = [
     
       // Air Transport
       "airplane ✈️", "small-airplane 🛩️", "airplane-departure 🛫", "airplane-arrival 🛬",
-      "helicopter 🚁", "parachute 🪂", "flying-saucer 🛸",
+      "helicopter 🚁", "paraglider 🪂", "flying-saucer 🛸",
     
       // Water Transport
       "ship 🚢", "ferry ⛴️", "motor-boat 🛥️", "speedboat 🚤", "sailboat ⛵",
       "canoe 🛶", "passenger-ship 🛳️",
     
       // Space
-      "rocket 🚀", "satellite 🛰️", "flying-saucer 🛸", "ringed-planet 🪐", "astronaut 🧑‍🚀",
+      "rocket 🚀", "satellite 🛰️", "flying-saucer 🛸", "saturn 🪐", "astronaut 🧑‍🚀",
     
       // Related
       "fuel-pump ⛽", "charging-station 🔌", "bus-stop 🚏", "stop-sign 🛑",
@@ -1116,6 +1116,167 @@ const themes = [
       "adaptation 🐫🏜️🧬💪",  
       "taxonomy 📚🔍🦋🧬",  
       "microscope 🔬👀🧫📚"
+    ]
+  },
+  {
+    name: "Automotive",
+    emoji: "🚗",
+    words: [
+      "car 🚗",
+      "truck 🚚",
+      "motorcycle 🏍️",
+      "bus 🚌",
+      "van 🚐",
+      "pickup-truck 🛻🧰",
+      "ambulance 🚑⛑️",
+      "police-car 🚓👮‍♂️",
+      "fire-truck 🚒🔥",
+      "taxi 🚕💵",
+      "electric-car ⚡🚗🔌",
+      "hybrid-car 🔋⛽🚗",
+      "sports-car 🏎️💨🏁",
+      "racecar 🏁🏎️🔥",
+      "convertible 🚘☀️⬆️",
+      "jeep 🛻🌲🏔️",
+      "limousine 🚘🎩🍾",
+      "tow-truck 🚛⚠️🔧",
+      "snowplow 🚛❄️🧹",
+      "bulldozer 🚜🪨🛠️",
+      "RV 🚐🏕️🛏️",
+      "trailer 🛻🏠⚙️",
+      
+      "engine 🔧🛞💥",
+      "brakes 🛑🛞💨",
+      "transmission ⚙️🔁🚗",
+      "clutch 🦶⚙️🚘",
+      "exhaust-system 🌬️🔥🚗",
+      "suspension 🛞⬆️⬇️",
+      "steering-wheel 🕹️🛞🚗",
+      "headlights 💡🌙🚘",
+      "windshield-wipers 🌧️🧼🧽",
+      "tire 🛞⚫💨",
+      "flat-tire 🛞🔻💥",
+      "airbag 🎈💥🧍",
+      "seatbelt 🎗️🧍🛡️",
+      "dashboard 📊🚘🛠️",
+      "gas-pedal 🦶⚡🚗",
+      "speedometer ⏱️💨🚘",
+      "odometer 📏📊🚗",
+      "fuel-tank ⛽🛢️🔥",
+      "battery 🔋⚡🚗",
+      "oil-change 🛢️🔄🧰",
+      
+      "manual-transmission 🧑‍🔧⚙️🕹️",
+      "automatic-transmission 🔁🚗⚙️",
+      "turbocharger 🌪️⚙️💨",
+      "all-wheel-drive 🛞🛞🛞🛞",
+      "cruise-control 🚗🛌⏱️",
+      "parking-sensor 📢🚘🅿️",
+      "GPS 🗺️📍🚗",
+      "infotainment-screen 📺🎶🗺️",
+      
+      "car-wash 🚿🚗🧽",
+      "refueling ⛽💰🚗",
+      "drifting 🚗💨↩️",
+      "drag-racing 🏁🚦🔥🚗",
+      "off-roading 🛻🏔️🌲",
+      "tuning 🔧🎛️🏎️",
+      "test-drive 🚗🧪🛣️",
+      "road-trip 🚗🗺️🍔🎶",
+      "traffic-jam 🚗🚗🚗⏳",
+      "accident 🚗💥🚑",
+      
+      "driver’s-license 🪪🚗✅",
+      "mechanic 🧑‍🔧🔧🛠️",
+      "dealership 🚗🏢💵",
+      "auto-show 🚗🎪✨",
+      "car-insurance 💵🛡️🚗",
+      "registration 🪪📄🚘",
+      "inspection 🔍🚗✅",
+      "engine-light 💡⚠️🚗",
+      "EV-charging 🔋⚡🔌🚘",
+      
+      "Tesla ⚡🚗🧠",
+      "Toyota 🚗🌏🧱",
+      "BMW 🚗🇩🇪🛣️",
+      "Mercedes-Benz 🚘⭐🇩🇪",
+      "Ford 🚙🇺🇸🏁",
+      "Honda 🚗🇯🇵🔧",
+      "Volkswagen 🚙🇩🇪👨‍👩‍👧",
+      "Jeep 🛻🇺🇸🪖",
+      "Porsche 🏎️🇩🇪🔥",
+      "Lamborghini 🐂🏎️🔥",
+      "Ferrari 🐎🏁🇮🇹"
+    ]
+  },
+  {
+    name: "Famous People",
+    emoji: "🌟",
+    words: [
+      // Scientists & Thinkers
+      "albert-einstein 🧠🔬🧲👨🏻‍🦳",
+      "isaac-newton 🍎📐🌌🧑🏻‍🔬",
+      "marie-curie 🧪☢️🎓👩🏻‍🔬",
+      "stephen-hawking ♿🌌🕳️👨🏻‍🦼",
+      "galileo-galilei 🔭🌠⚖️🧔🏻",
+      "charles-darwin 🐒🌿📜🧔",
+  
+      // Humanitarians & Activists
+      "martin-luther-king ✊🏽🕊️🎤👨🏾",
+      "mahatma-gandhi 🕊️🇮🇳🧘👴🏽",
+      "nelson-mandela ✊🏿🕊️🇿🇦👨🏿",
+      "mother-teresa 🧕🕊️❤️👵🏻",
+      "malala-yousafzai 📚🧕✊🏽👧🏽",
+  
+      // Historical Leaders
+      "abraham-lincoln 🎩🇺🇸📜🧔🏻",
+      "george-washington 🎖️🇺🇸🦅👨🏻‍🦳",
+      "napoleon-bonaparte 🇫🇷🎖️🧢🧔🏻",
+      "cleopatra 👑🐍🇪🇬👩🏽",
+      "julius-caesar 🏛️⚔️🇮🇹🧔🏻",
+  
+      // Artists & Writers
+      "leonardo-da-vinci 🎨🛠️🧠🧔🏻",
+      "william-shakespeare 🎭🖋️📜🧔🏻",
+      "vincent-van-gogh 🎨🌻🧠🧔🏻",
+      "pablo-picasso 🎨🧩🧔🏻",
+      "frida-kahlo 🎨🌺🧕👩🏽",
+  
+      // Entrepreneurs
+      "elon-musk 🚀🔋🌕🧔🏻",
+      "steve-jobs 🍏📱🧠🧔🏻",
+      "bill-gates 💻📘💵👓🧔🏻",
+      "mark-zuckerberg 👨‍💻📘🌐🧑🏻",
+      "oprah-winfrey 🎤📺💬👩🏾",
+  
+      // Political Leaders
+      "barack-obama 🇺🇸🗳️✊🏾👨🏾",
+      "donald-trump 🇺🇸🏢💬👱🏻‍♂️",
+      "joe-biden 🇺🇸🤝🗳️👴🏻",
+      "vladimir-putin 🇷🇺🕵️‍♂️🎖️👨🏻",
+      "xi-jinping 🇨🇳🐉🏛️👨🏻",
+  
+      // Entertainers
+      "kim-kardashian 💄📸💰👩🏻",
+      "taylor-swift 🎤💔📝👩🏻",
+      "beyoncé 👑🎤💃👩🏾",
+      "michael-jackson 🕺🎶🧤👨🏻",  // Skin tone chosen post-vitiligo
+      "elvis-presley 🎸👑🕺👨🏻",
+      "freddie-mercury 🎤🎹👑👨🏻‍🎤",
+  
+      // Athletes
+      "lionel-messi ⚽🇦🇷🐐👨🏻",
+      "cristiano-ronaldo ⚽🇵🇹💪👨🏻",
+      "serena-williams 🎾🏆💪🏾👩🏾",
+      "muhammad-ali 🥊👑🐝👨🏿",
+      "usain-bolt 🏃💨⚡👨🏿",
+  
+      // Others
+      "anne-frank 📖🕊️🕍👧🏻",
+      "joan-of-arc ⚔️🔥🧕👩🏻",
+      "princess-diana 👑❤️🚗👱🏻‍♀️",
+      "queen-elizabeth 👑🇬🇧🧓👵🏻",
+      "walt-disney 🐭🎬✨🧔🏻"
     ]
   }
   

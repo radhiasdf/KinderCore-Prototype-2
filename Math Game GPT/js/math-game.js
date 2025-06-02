@@ -37,9 +37,28 @@ blockImageURLs.forEach(url => {
     blockImages.push(img);
 });
 
-const sounds = {
-    correct: new Audio('https://freesound.org/data/previews/256/256113_3263906-lq.mp3'),
-};
+////////////////////////////// SOUNDS /////////////////////////
+
+function createSoundPool(url, poolSize = 5) {
+  const pool = Array.from({ length: poolSize }, () => {
+    const audio = new Audio(url);
+    audio.preload = 'auto';
+    return audio;
+  });
+
+  let index = 0;
+
+  return function playFromPool() {
+    const sound = pool[index];
+    sound.currentTime = 0;
+    sound.play();
+    index = (index + 1) % pool.length;
+  };
+}
+
+// Create and use:
+const playCorrectSound = createSoundPool('https://freesound.org/data/previews/256/256113_3263906-lq.mp3');
+
 
 const stars = [];
 const shootingStars = [];
@@ -271,7 +290,7 @@ document.getElementById('answer').addEventListener('input', function () {
 
     const val = parseInt(this.value);
     if (val === question.answer) {
-    sounds.correct.play();
+    playCorrectSound(); // No lag, supports overlapping
     score++;
     if (score % 5 === 0) {
         level++;
@@ -385,6 +404,8 @@ function reset() {
     cloudManager.spawnCloud();
   }
     clearInterval(interval);
+    console.log("focus");
+    document.getElementById('answer').focus();
 }
 
 // load, setstage, start timer
@@ -392,7 +413,10 @@ loadProgress();
 reset();
 draw();
 
-document.getElementById('welcomeCloseButton').addEventListener('click', startTimer);
+document.getElementById('welcomeCloseButton').addEventListener('click', function(){
+  startTimer();
+  document.getElementById('answer').focus();
+});
 
 ////////////////////////////// RESET DIFFICULTY /////////////////
 

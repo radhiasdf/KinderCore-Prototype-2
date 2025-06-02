@@ -14,6 +14,8 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate">
+
   <title>Spelling Bee Game</title>
   <link rel="icon" href="../icons/spellingbeeicon.png" type="image/png">
 
@@ -63,6 +65,19 @@
       margin: 4px;
       display: inline-block;
     }
+    .hex-container {
+      display: flex;
+      justify-content: center;
+      margin: 1em 0;
+      flex-wrap: wrap;
+    }
+    .fly {
+      animation: flyToScore 1s forwards;
+    }
+    @keyframes flyToScore {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
     #highScore {
       font-size: 1rem;
       color: #888;
@@ -92,19 +107,6 @@
       font-size: 1.2em;
       display: flex;
       align-items: center;
-    }
-    .hex-container {
-      display: flex;
-      justify-content: center;
-      margin: 1em 0;
-      flex-wrap: wrap;
-    }
-    .fly {
-      animation: flyToScore 1s forwards;
-    }
-    @keyframes flyToScore {
-      0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(-100px); opacity: 0; }
     }
     input[type="text"] {
       font-size: 1.3em;
@@ -137,6 +139,7 @@
       border-radius: 16px;
       font-size: 16px;
       padding: 10px 20px;
+      width: 240px;
     }
 
     #skipButton {
@@ -264,7 +267,7 @@
 
 
   </style>
-  
+  <!-- ///////////////////////// HTML //////////////////////////////////// -->
 </head>
 <body>
   <div id="empty-box">
@@ -308,9 +311,9 @@
   </div>
 
   <select id="difficulty">
-    <option value="easy">Easy</option>
-    <option value="medium">Medium</option>
-    <option value="hard">Hard</option>
+    <option value="all">All Words</option>
+    <option value="easy">Easy (1-4 Letters)</option>
+    <option value="hard">Hard (5+ Letters)</option>
   </select>
 
   <h1>Select Themes to Practice</h1>
@@ -366,9 +369,18 @@
 
     const container = document.getElementById("theme-container");
 
-    let selectedThemes = JSON.parse(localStorage.getItem("selectedThemes")) || [0, 1, 2];
+    // Load saved difficulty on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('difficulty');
+      if (saved) {
+        difficultySelect.value = saved;
+      }
+    });
+    difficultySelect.addEventListener('change', () => {
+      localStorage.setItem('difficulty', difficultySelect.value);
+    });
 
-    console.log(selectedThemes);
+    let selectedThemes = JSON.parse(localStorage.getItem("selectedThemes")) || [0, 1, 2];
 
     function saveSelection() {
       localStorage.setItem("selectedThemes", JSON.stringify(selectedThemes));
@@ -421,8 +433,8 @@
           const cleanWord = w.word.replace(/[^a-zA-Z- ]/g, ''); // Remove non-letter characters, keeping spaces and dashes
           const len = cleanWord.replace(/-/g, ' ').length; // Adjust length to treat dashes as spaces
           if (difficultySelect.value === 'easy') return len <= 4;
-          if (difficultySelect.value === 'medium') return len > 4 && len <= 6;
-          return len > 6;
+          if (difficultySelect.value === 'hard') return len > 4;
+          return true;
         });
 
         if (filteredWords.length === 0) {
@@ -437,21 +449,36 @@
         hintImage.textContent = emoji;
         hexContainer.innerHTML = '';
 
-        // Replace dashes with spaces for hexagon display
-        const displayWord = word.replace(/-/g, ' '); // Replace dashes with spaces
+      //   // Replace dashes with spaces for hexagon display
+      //   const displayWord = word.replace(/-/g, ' '); // Replace dashes with spaces
 
-        // Create hexagons for the word with spaces
-        for (let char of displayWord) {
-          const hex = document.createElement('div');
-          if (char === ' ') {
-            hex.classList.add('hex-space');
-            hex.style.visibility = 'hidden'; // Hide space hexagons
-          } else {
+      //   // Create hexagons for the word with spaces
+      //   for (let char of displayWord) {
+      //     const hex = document.createElement('div');
+      //     if (char === ' ') {
+      //       hex.classList.add('hex-space');
+      //       hex.style.visibility = 'hidden'; // Hide space hexagons
+      //     } else {
+      //       hex.classList.add('hex');
+      //     }
+      //     hexContainer.appendChild(hex);
+      //   }
+
+        const parts = word.split('-'); // ['new', 'york']
+        parts.forEach((part, index) => {
+          for (let char of part) {
+            const hex = document.createElement('div');
             hex.classList.add('hex');
+            hexContainer.appendChild(hex);
           }
-          hexContainer.appendChild(hex);
-        }
+          if (index < parts.length - 1) {
+            const lineBreak = document.createElement('br');
+            hexContainer.appendChild(lineBreak);
+          }
+        });
       }
+
+      
 
     ////////////////////////// ENTERING LETTERS /////////////////////////////
 
@@ -486,6 +513,19 @@
       }
     });
 
+    function revealWord() {
+        const { emoji, word } = words[currentIndex];
+        addToHistory(`${emoji} ${word}`);
+
+        const hexes = hexContainer.children;
+        const displayWord = word.replace(/-/g, ' '); // match hex layout
+        for (let i = 0; i < hexes.length; i++) {
+          const char = displayWord[i];
+          hexes[i].textContent = char ? char.toUpperCase() : '';
+          if (char && char !== ' ') hexes[i].classList.add('filled');
+        }
+      }
+
     //////////////////////////////////// SKIP //////////////////////////////////
 
     document.getElementById('skipButton').addEventListener('click', () => {
@@ -509,19 +549,6 @@
           endGame();
         }
       }, 1000);
-    }
-
-    function revealWord(){
-      const { emoji, word } = words[currentIndex];
-      addToHistory(`${emoji} ${word}`);
-
-      const hexes = hexContainer.children;
-      const displayWord = word.replace(/-/g, ' '); // match hex layout
-      for (let i = 0; i < hexes.length; i++) {
-        const char = displayWord[i];
-        hexes[i].textContent = char ? char.toUpperCase() : '';
-        if (char && char !== ' ') hexes[i].classList.add('filled');
-      }
     }
 
     function endGame() {
