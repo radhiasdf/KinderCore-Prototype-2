@@ -181,17 +181,17 @@
         const parts = entries.map(([difficulty, data]) =>
           `${difficulty[0].toUpperCase() + difficulty.slice(1)}: ${data.blocks}`
         );
-        document.getElementById("bestArithmetic").innerHTML = `⭐Best Scores:<br> ${parts.join('<br>')}`;
+        document.getElementById("bestArithmetic").innerHTML = `⭐Your Best:<br> ${parts.join('<br>')}`;
       }
 
       const bestSpelling = localStorage.getItem("bestSpelling");
       if (bestSpelling) {
-        document.getElementById("bestSpelling").innerText = `⭐Best Score: ${bestSpelling}`;
+        document.getElementById("bestSpelling").innerText = `⭐Your Best: ${bestSpelling}`;
       }
 
       const bestSpellingArabic = localStorage.getItem("bestSpellingArabic");
       if (bestSpellingArabic) {
-        document.getElementById("bestSpellingArabic").innerText = `⭐Best Score: ${bestSpellingArabic}`;
+        document.getElementById("bestSpellingArabic").innerText = `⭐Your Best: ${bestSpellingArabic}`;
       }
     });
   </script>

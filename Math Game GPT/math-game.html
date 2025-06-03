@@ -21,20 +21,13 @@
 </head>
 <body>
 
-  <button class="back-button" onclick="window.history.length > 1 ? history.back() : window.location.href='index.html'">
-    ✖
-</button>
+
+<button class="back-button"
+onclick=" location.href='../index.html'"> ✖ </button>    
+
     
 
   <div id="ui">
-
-    <div style="padding-bottom: 5px">
-       <select id="difficulty">
-      <option value="easy">Easy</option>
-      <option value="medium" selected>Medium</option>
-      <option value="hard">Hard</option>
-    </select>
-    </div>
     
     <div id="question"></div>
     <input 
@@ -61,6 +54,16 @@
     <h2>Game Over!</h2>
     <p id="finalLevel">Level: 1</p>
     <p id="finalTowerHeight">Tower Height: 0</p>
+
+    <div style="padding-bottom: 5px">
+      <p>Choose difficulty:</p>
+      <select class="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+    
     <button id="restartButton">Restart</button>
   </div>
 </div>
@@ -71,6 +74,16 @@
     <h1>Welcome!</h1>
     <h2>Best Scores:</h2>
     <p id="welcomeScores"></p>
+
+    <div style="padding-bottom: 5px">
+      <p>Choose difficulty:</p>
+      <select class="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
     <button id="welcomeCloseButton">Start Game</button>
   </div>
 </div>

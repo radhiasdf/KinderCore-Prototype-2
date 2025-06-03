@@ -6,8 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Survey Section</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" , href="back-button.css">
+
     <style>
-        /* Put any survey-specific styles here or in external CSS */
+        body.embedded .back-button {
+  display: none;
+}
     </style>
 </head>
 
@@ -17,6 +21,8 @@
 <!--/////////////////////////////////// SURVEY SECTION /////////////////////////////////// -->
 
 <section class="survey-section" style="margin: 10px; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+
+    <button class="back-button" onclick=" location.href='../index.html'"> ✖ </button>
 
     <div class="notranslate" translate="no">
         <select id="languageSelect" style="padding: 5px; font-size: 14px; min-width: 220px;">
@@ -114,6 +120,12 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
 <script>
+
+    if (window.top !== window.self) {
+            document.body.classList.add("embedded");
+        } else {
+            document.body.classList.add("standalone");
+        }
 
     const firebaseConfig = {
         apiKey: "AIzaSyBpuR6e7DNDxCkdhbG9g5y4jshDvc-XaEM",

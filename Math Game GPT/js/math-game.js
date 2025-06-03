@@ -116,7 +116,7 @@ function lerpColor(a, b, t) {
 /////////////////////////////// QUESTIONS ///////////////////////
 
 function generateQuestion() {
-    const difficulty = document.getElementById('difficulty').value;
+  const difficulty = document.querySelector('.difficulty').value;
   let a, b, op, ops;
 
   if (difficulty === 'easy') {
@@ -324,7 +324,7 @@ function startTimer() {
       document.getElementById('finalTowerHeight').textContent = `Tower Height: ${tower.length}`;
 
       // Save high scores to localStorage
-      const difficulty = document.getElementById('difficulty').value;
+      const difficulty = document.querySelector('.difficulty').value;
       const save = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
       const prev = save[difficulty] || { level: 0, blocks: 0 };
 
@@ -377,9 +377,10 @@ function loadProgress() {
   };
 //}
 
-  const savedDifficulty = localStorage.getItem("selectedDifficulty");
-  const select = document.getElementById("difficulty");
-  select.value = savedDifficulty || "medium"; // default to medium
+const savedDifficulty = localStorage.getItem("selectedDifficulty") || "medium";
+document.querySelectorAll('.difficulty').forEach(s => {
+  s.value = savedDifficulty;
+});
 }
 
 /////////////////////// INITIALISE //////////////////////////
@@ -420,11 +421,18 @@ document.getElementById('welcomeCloseButton').addEventListener('click', function
 
 ////////////////////////////// RESET DIFFICULTY /////////////////
 
-document.getElementById('difficulty').addEventListener('change', (e) => {
+document.querySelectorAll('.difficulty').forEach(select => {
+  select.addEventListener('change', (e) => {
     const selectedDifficulty = e.target.value;
     localStorage.setItem("selectedDifficulty", selectedDifficulty);
-  reset();
-  startTimer();
+
+    // Sync all dropdowns to match the selection
+    document.querySelectorAll('.difficulty').forEach(s => {
+      s.value = selectedDifficulty;
+    });
+
+    reset(); // restart game with new difficulty
+  });
 });
 
 setInterval(() => {

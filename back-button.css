@@ -1,4 +1,6 @@
 button.back-button {
+  position: absolute;
+  /* 👈 Required to position it! */
   top: 0.4rem;
   left: 0.4rem;
   padding: 0.4rem 0.7rem;
@@ -6,10 +8,9 @@ button.back-button {
   background: rgba(236, 236, 236, 0.8);
   border-radius: 10rem;
   text-align: center;
-  z-index: 1001; /* higher than overlay */
+  z-index: 100001;
   border: none;
 }
-
 button.back-button:hover{
   background-color: rgb(255, 255, 255);
 }
