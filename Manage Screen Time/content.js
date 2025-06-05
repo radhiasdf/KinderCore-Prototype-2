@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener((msg) => {
       overlay.style.display = "block";
       let min = Math.floor(msg.remaining / 60);
       let sec = msg.remaining % 60;
-      timerEl.textContent = `Time left: ${min}:${sec.toString().padStart(2, '0')}`;
+      overlay.textContent = `Time left: ${min}:${sec.toString().padStart(2, '0')}`;
     }
   }
 });

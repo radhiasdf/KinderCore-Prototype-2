@@ -1,6 +1,10 @@
-let usage = {};
+let usage = {};  // current day
+let history = {};  // all days
 let lastDomain = null;
 let lastTime = Date.now();
+
+const day = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+const allowed = limits?.[day]?.[domain] ? limits[day][domain] * 60 : null;
 
 function getDomain(url) {
   try {
@@ -11,7 +15,11 @@ function getDomain(url) {
 }
 
 function saveUsage() {
-  chrome.storage.local.set({ usage });
+  const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+  chrome.storage.local.get(["history"], ({ history: storedHistory = {} }) => {
+    storedHistory[today] = usage;
+    chrome.storage.local.set({ usage, history: storedHistory });
+  });
 }
 
 function checkActiveTab() {

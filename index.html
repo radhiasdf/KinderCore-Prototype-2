@@ -74,7 +74,7 @@
             <img src="icons/mathtowericon.png" alt="Arithmetic Tower" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
                 <strong>Arithmetic Tower</strong>
-                <div class="score" id="bestArithmetic">⭐Best Score: --</div>
+                <div class="score" id="bestArithmetic">⭐Your Best: --</div>
             </div>
         </div>
         <div>
@@ -92,7 +92,7 @@
             lt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
             <strong>Spelling Bee</strong>
-            <div class="score" id="bestSpelling">⭐Best Score: --</div>
+            <div class="score" id="bestSpelling">⭐Your Best: --</div>
             </div>
         </div>
         <div>
@@ -105,7 +105,7 @@
             <img src="icons/spellingbeearabicicon.png" alt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
             <strong>Arabic Spelling Bee</strong>
-            <div class="score" id="bestSpellingArabic">⭐Best Score: --</div>
+            <div class="score" id="bestSpellingArabic">⭐Your Best: --</div>
             </div>
         </div>
         <div>
@@ -135,24 +135,12 @@
     }
 
     function finishSetup() {
-      const pin = document.getElementById("pinInput").value.trim();
-      if (pin === "") {
-        alert("Please enter a PIN.");
-        return;
-      }
       localStorage.setItem("childAge", age);
-      localStorage.setItem("parentPIN", pin);
       document.getElementById("setupModal").classList.add("hidden");
     }
 
     function openControls() {
-      const entered = prompt("Enter your PIN to access controls:");
-      const saved = localStorage.getItem("parentPIN");
-      if (entered === saved) {
-        window.location.href = "Manage Screen Time/full.html";
-      } else {
-        alert("Incorrect PIN.");
-      }
+        //window.location.href = "Manage Screen Time/full.html"; 
     }
 
     function startArithmeticGame() {
