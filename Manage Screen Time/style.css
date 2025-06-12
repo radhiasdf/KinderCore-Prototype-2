@@ -32,7 +32,7 @@ button {
   cursor: pointer;
 }
 
-#limitList {
+.limitList {
   list-style: none;
   padding: 0;
 }
@@ -44,4 +44,186 @@ li {
   background: white;
   padding: 8px;
   border-radius: 6px;
+}
+
+#container > div {
+  display: none;
+}
+.visible {
+  display: block;
+}
+
+/* //////// SCREEN LIMIT OVERLAY AND STYLING //////////// */
+/* General overlay style */
+.purple-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 2px solid #4f46e5;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 9999;
+  width: 90%;
+  display: none;
+
+  max-height: 90vh;       /* makes it scrollable */
+  overflow-y: auto;       /* scroll only when needed */
+}
+
+#set-limit-ui {
+  height: 70%;
+}
+
+.purple-box .close-btn {
+  all: unset; /* resets all inherited styles */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e7ff;
+  color: #4f46e5;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+.purple-box .close-btn:hover {
+  background-color: #c7d2fe;
+}
+
+/* Overlay backdrop (optional if you want a darkened background) */
+#overlayBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 9998;
+  display: none;
+}
+
+/* Inputs and buttons */
+.purple-box input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.purple-box button {
+  width: 100%;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.purple-box button:hover {
+  background-color:rgb(95, 16, 231);
+}
+
+/* ///// DAY CIRCLES SELECTION ///////////// */
+
+.day-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.day {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background-color: #dbeafe; /* light greyish blue */
+  color: #1e3a8a; /* dark blue text */
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.day.selected {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.selection-label {
+  color: #6b7280; /* grey text */
+  font-size: 14px;
+}
+
+/* DAILY BREAKDOWN */
+
+#dayBreakdown h3 {
+  margin-bottom: 10px;
+}
+
+#dayBreakdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#dayBreakdown li, .limitList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+#dayBreakdown li img, .limitList li img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+#dayBreakdown li button {
+  font-size: 18px;
+  padding: 0;
+}
+
+.hourglass-btn {
+  background-color: transparent; /* Make the background transparent */
+  border: none; /* Remove border */
+  cursor: pointer; /* Change the cursor to indicate it's clickable */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.hourglass-btn:hover {
+  background-color: #a0b5c7; /* Grey-blue color */
+}
+
+/* /////////// INPUT ROW FOR SCreen LIMIt ///////////// */
+
+#addForm{
+  display: flex;
+  flex-direction: column;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px; /* Adjust spacing between inputs as needed */
+  margin-bottom: 8px; /* Space between inputs and button */
+}
+
+.input-row input {
+  flex: 1; /* Let both inputs share the row evenly */
 }

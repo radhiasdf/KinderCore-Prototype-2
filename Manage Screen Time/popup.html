@@ -6,23 +6,66 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Screen Time Settings</h1>
-  <form id="addForm">
-    <input type="text" id="domainInput" placeholder="example.com" required />
-    <input type="number" id="limitInput" placeholder="Minutes" min="1" required />
-    <button type="submit">Add Limit</button>
-  </form>
-  <h2>Limits</h2>
-  <ul id="limitList"></ul>
-  <h2>Usage History</h2>
-  <ul id="usageList"></ul>
+  <h2>Screen Time Settings</h2>
+
+  <div id="overlayBackdrop"></div> <!-- ADD THIS LINE ABOVE THE PIN MODALS -->
 
   <canvas id="weeklyChart" width="400" height="200"></canvas>
   <div id="dayBreakdown"></div>
+
+  <button id="set-limit-btn">Set Screen Time Limit</button>
+
+  <div id="setupPinScreen" class="purple-box">
+    <h3>Set up your password</h3>
+    <form id="setupPinForm">
+      <input type="password" id="setupPinInput" placeholder="4 characters minimum" required />
+      <button type="submit" id="savePinBtn">Save Password</button>
+    </form>
+  </div>
   
-  <!-- // Per-day Limit UI and Storage -->  
-  <div id="dailyLimits"></div>
+  <div id="enterPinScreen" class="purple-box">
+    <h3>Enter your password for setting time limit:</h3>
+    <form id="enterPinForm">
+      <input type="password" id="enterPinInput" placeholder="Enter Password" required />
+      <button type="submit" id="verifyPinBtn">Enter</button>
+    </form>
+    </div>
+
+
+  <div id="set-limit-ui" class="purple-box">
+    <button class="close-btn">&times;</button>
+    <h1>Set Time Limit:</h1>
+    <form id="addForm">
+      <div class="input-row">
+        <input type="text" id="domainInput" placeholder="example.com" required />
+        <input type="number" id="hourInput" placeholder="Hours" min="0" max="24" />
+        <input type="number" id="minuteInput" placeholder="Minutes" min="0" max="59" /></div>
+
+        <!-- <div class="day-container">
+          <div class="day" data-day="Monday">M</div>
+          <div class="day" data-day="Tuesday">T</div>
+          <div class="day" data-day="Wednesday">W</div>
+          <div class="day" data-day="Thursday">T</div>
+          <div class="day" data-day="Friday">F</div>
+          <div class="day" data-day="Saturday">S</div>
+          <div class="day" data-day="Sunday">S</div>
+        </div>
+        
+        <div class="selection-label" id="selectionLabel">No days selected</div> -->
+      <button type="submit">Apply</button>
+    </form>
+    <h2>Limits List</h2>
+    <ul id="remove-items" class="limitList"></ul>
   
+    <!-- // Per-day Limit UI and Storage (NOT WORKING YET)-->
+    <div id="dailyLimits"></div>
+  </div>
+
+  <h2>Limits List</h2>
+  <ul class="limitList"></ul>
+
   <script src="popup.js"></script>
+  <script src="chart.umd.js"></script>
+
 </body>
 </html>

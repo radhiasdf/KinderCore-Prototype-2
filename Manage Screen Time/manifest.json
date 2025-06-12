@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "KinderCore",
   "version": "1.0",
-  "description": "Set screen time limits for any website.",
-  "permissions": ["storage", "tabs", "scripting","notifications"],
+  "description": "View screen time and set screen time limits for any website.",
+  "permissions": ["idle", "storage", "tabs", "scripting", "notifications", "alarms"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
@@ -18,9 +18,12 @@
   "action": {
     "default_popup": "popup.html"
   },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "web_accessible_resources": [
   {
-      "resources": ["popup.js", "popup.css"],
+      "resources": ["popup.js", "popup.css", "content/showOverlay.js", "content/hideOverlay.js"],
       "matches": ["<all_urls>"]
     }
   ],
