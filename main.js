@@ -4,7 +4,7 @@ import {
     updateGlobalCoinDisplay,
     animateCoinIcon,
     animateCoinCount
-  } from './coin.js';
+  } from './utils/coin.js';
   
   let age = 4;
   
