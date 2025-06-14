@@ -19,15 +19,17 @@
   <link rel="stylesheet" href="styles.css">
 
 </head>
-<body>
+<div>
 
 
 <button class="back-button"
 onclick=" location.href='../index.html'"> ✖ </button>    
 
     
+<div class="ui">
+  
 
-  <div id="ui">
+  <div id="question-box" class="level-box">
     
     <div id="question"></div>
     <input 
@@ -47,46 +49,62 @@ onclick=" location.href='../index.html'"> ✖ </button>
 
 
 
+
+  <div id="gameOverOverlay" class="overlay" style="display: none;">
+    <div class="overlay-box slide-up">
+      <h2>Game Over!</h2>
+      <p id="finalLevel">Level: 1</p>
+      <p id="finalTowerHeight">Tower Height: 0</p>
+  
+      <div style="padding-bottom: 5px">
+        <p>Choose difficulty:</p>
+        <select class="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+  
+      <button id="restartButton">Restart</button>
+      <div style="flex: wrap; gap: 5px;">
+        <div id="coinCounter"></div>
+      <div>
+        <div id="coinAnimationArea"></div>
+        <div id="multiplier-popup" class="hidden">
+          <p>HARD: 4x MULT</p>
+          </div>
+      </div>
+      
+      </div>
+    </div>
+  </div>
+  
+  <div id="welcomeOverlay" class="overlay" style="display: none;">
+    <div class="overlay-box">
+      <h1>Welcome!</h1>
+      <h3>Your Best:</h3>
+      <div id="welcomeScores" class="score-list"></div>
+
+  
+      <div style="padding-bottom: 5px">
+        <p>Choose difficulty:</p>
+        <select class="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+  
+      <button id="welcomeCloseButton">Start Game</button>
+    </div>
+  </div>
+
+</div>
+
   <canvas id="gameCanvas"></canvas>
 
-  <div id="gameOverOverlay" class="game-over-overlay">
-  <div class="game-over-content">
-    <h2>Game Over!</h2>
-    <p id="finalLevel">Level: 1</p>
-    <p id="finalTowerHeight">Tower Height: 0</p>
-
-    <div style="padding-bottom: 5px">
-      <p>Choose difficulty:</p>
-      <select class="difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium" selected>Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-    </div>
-    
-    <button id="restartButton">Restart</button>
-  </div>
-</div>
-
-
-<div id="welcomeOverlay" style="display: none;">
-  <div id="welcomeBox">
-    <h1>Welcome!</h1>
-    <h2>Best Scores:</h2>
-    <p id="welcomeScores"></p>
-
-    <div style="padding-bottom: 5px">
-      <p>Choose difficulty:</p>
-      <select class="difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium" selected>Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-    </div>
-
-    <button id="welcomeCloseButton">Start Game</button>
-  </div>
-</div>
+  <script type="module" src="../../coin.js"></script>
+  <script type="module" src="../utils/soundManager.js"></script>
 
   <script type="module" src="js/math-game.js"></script>
 

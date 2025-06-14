@@ -1,5 +1,7 @@
 import { CloudManager } from './cloud.js';
 import { Firework } from './fireworks.js';
+import { createSoundPool } from '../../utils/soundManager.js';
+
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -39,25 +41,11 @@ blockImageURLs.forEach(url => {
 
 ////////////////////////////// SOUNDS /////////////////////////
 
-function createSoundPool(url, poolSize = 5) {
-  const pool = Array.from({ length: poolSize }, () => {
-    const audio = new Audio(url);
-    audio.preload = 'auto';
-    return audio;
-  });
-
-  let index = 0;
-
-  return function playFromPool() {
-    const sound = pool[index];
-    sound.currentTime = 0;
-    sound.play();
-    index = (index + 1) % pool.length;
-  };
-}
-
 // Create and use:
-const playCorrectSound = createSoundPool('https://freesound.org/data/previews/256/256113_3263906-lq.mp3');
+const playCorrectSound = createSoundPool('assets/blocky_level_up.mp3');
+const playLevelupSound = createSoundPool('assets/Soft Level Up_Db.mp3');
+const playLevelupSoundBm = createSoundPool('assets/Soft Level Up_B_minor.mp3');
+const playGameOverSound = createSoundPool('assets/gameoversound.mp3');
 
 
 const stars = [];
@@ -278,6 +266,12 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
+function triggerLevelUpEffect() {
+  const box = document.getElementById('question-box');
+  box.classList.add('shine');
+  setTimeout(() => box.classList.remove('shine'), 1000); // Match the animation duration
+}
+
 ///////////////////////////// RUNNING ////////////////////////////
 
 function addBlock() {
@@ -293,8 +287,12 @@ document.getElementById('answer').addEventListener('input', function () {
     playCorrectSound(); // No lag, supports overlapping
     score++;
     if (score % 5 === 0) {
+      console.log("error?");
+
         level++;
         document.getElementById('level').textContent = level;
+        triggerLevelUpEffect(); // ← Shine effect here
+        playLevelupSound();
     }
     //document.getElementById('feedback').textContent = 'Correct!';
     addBlock();
@@ -302,7 +300,87 @@ document.getElementById('answer').addEventListener('input', function () {
     } 
 });
 
-///////////////////////// GAME OVER //////////////////////////
+////////////////////////// COINS ///////////////////////////////
+
+function clearCoinDisplay(){
+  document.getElementById("coinAnimationArea").innerHTML = '';
+  document.getElementById("coinCounter").textContent = '';
+}
+
+function animateCoinAdd(numCoins, startValue = 1, speed = 80) { // doesnt clear previous
+  return new Promise((resolve) => {
+    const container = document.getElementById("coinAnimationArea");
+    const counter = document.getElementById("coinCounter");
+
+    counter.className = "coin-counter";
+
+    let coinValue = startValue;
+
+    function showNextCoin() {
+      if (coinValue >= startValue + numCoins) {
+        resolve(); // animation done
+        return;
+      }
+
+      counter.textContent = `+${coinValue}`;
+
+      const coin = document.createElement("span");
+      coin.textContent = "🪙";
+      coin.className = "coin-bounce";
+      container.appendChild(coin);
+      container.scrollTop = container.scrollHeight;
+
+      playLevelupSound();
+      setTimeout(showNextCoin, speed);
+      coinValue++;
+    }
+
+    setTimeout(showNextCoin, 500); // optional initial delay
+  });
+}
+
+
+////////////////////////// MULTIPLIER ///////////////////
+
+function showMultiplierPopup(mult) {
+  const popup = document.getElementById('multiplier-popup');
+  const difficulty = document.querySelector('.difficulty').value;
+  popup.textContent = `${difficulty.toUpperCase()}: ${mult}×`
+  popup.classList.remove('hidden');
+  // Force reflow to restart animation
+  void popup.offsetWidth;
+  popup.classList.add('show');
+  playLevelupSoundBm();
+
+  // Optional: hide after a few seconds
+  setTimeout(() => {
+    popup.classList.remove('show');
+    popup.classList.add('hidden');
+  }, 3000);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function showFinalCoins(solved, mult) {
+  await sleep(800);
+
+  const extra = (solved) * (mult - 1);
+
+  await animateCoinAdd(solved); // base coins first
+
+  await sleep(300); 
+
+  if (extra > 0 && mult > 1) {
+    showMultiplierPopup(mult);
+    await sleep(300);
+    await animateCoinAdd(extra, solved+1, 30); // startValue = next coin number
+  }
+} 
+
+///////////////////////// GAME LOOP and GAME OVER  //////////////////////////
+
 
 function startTimer() {
   gameOver = false;
@@ -311,28 +389,44 @@ function startTimer() {
     document.getElementById('timer').textContent = timeLeft;
 
     if (timeLeft <= 0) {
+      playGameOverSound();
       clearInterval(interval);
       gameOver = true;
 
-      // Hide the canvas and show the game over screen
-      //canvas.style.display = 'none';
-      const gameOverOverlay = document.getElementById('gameOverOverlay');
-      gameOverOverlay.style.display = 'flex';
+      clearCoinDisplay();
+      document.getElementById("question-box").classList.add("game-over");
 
-      // Update the game over screen with final stats
-      document.getElementById('finalLevel').textContent = `Level: ${level}`;
-      document.getElementById('finalTowerHeight').textContent = `Tower Height: ${tower.length}`;
 
-      // Save high scores to localStorage
       const difficulty = document.querySelector('.difficulty').value;
       const save = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
       const prev = save[difficulty] || { level: 0, blocks: 0 };
-
-      const newBlocks = Math.max(tower.length, prev.blocks);
+      
+      let solved = tower.length - 1;
+      const newBlocks = Math.max(solved, prev.blocks);
       const newLevel = Math.max(level, prev.level);
 
       save[difficulty] = { level: newLevel, blocks: newBlocks };
       localStorage.setItem('mathTowerScores', JSON.stringify(save));
+
+      let mult = 1;
+      if (difficulty === 'medium') {
+        mult = 2; 
+      } else if (difficulty === 'hard') {
+        mult = 6; // THESE MULTIPLIERS WILL MAKE OR BREAK THE GAME MECHANIC
+}
+
+      let addedCoins = (solved) * mult;
+
+      window.addCoins(addedCoins);
+
+      const gameOverOverlay = document.getElementById('gameOverOverlay');
+      gameOverOverlay.style.display = 'flex';
+
+      document.getElementById('finalLevel').textContent = `Level: ${level}`;
+      document.getElementById('finalTowerHeight').textContent = `Tower Height: ${solved}`;
+
+      showFinalCoins(solved, mult);     
+
     }
   }, 1000);
 }
@@ -352,6 +446,7 @@ document.getElementById('restartButton').addEventListener('click', function() {
 
 function loadProgress() {
   let scores = JSON.parse(localStorage.getItem('mathTowerScores') || '{}');
+  // Load saved XP from localStorage if it exists
 
   // Legacy support: convert old format if present
   const old = localStorage.getItem('mathTowerScore');
@@ -365,17 +460,57 @@ function loadProgress() {
     localStorage.removeItem('mathTowerScore');
   }
 
-  const entries = Object.entries(scores);
-  const parts = entries.map(([difficulty, data]) =>
-    `<strong>${difficulty[0].toUpperCase() + difficulty.slice(1)}</strong>: Level ${data.level}, Height ${data.blocks}`
-  );
-  document.getElementById('welcomeScores').innerHTML = parts.join('<br>');
-  document.getElementById('welcomeOverlay').style.display = 'flex';
-
-  document.getElementById('welcomeCloseButton').onclick = () => {
-    document.getElementById('welcomeOverlay').style.display = 'none';
+  const difficultyColors = {
+    easy: '#4CAF50',     // green
+    medium: '#FFC107',   // amber
+    hard: '#F44336'      // red
   };
-//}
+  
+  const entries = Object.entries(scores);
+const parts = entries.map(([difficulty, data]) => {
+  const name = difficulty[0].toUpperCase() + difficulty.slice(1);
+  const color = difficultyColors[difficulty.toLowerCase()] || '#ccc';
+  return `
+    <div class="score-entry" style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.5em 0;
+      padding: 0.3em 0.5em;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.03);
+    ">
+      <!-- Difficulty badge on the left -->
+      <span class="difficulty-badge" style="
+        background: ${color};
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 0.9em;
+      ">
+        ${name}
+      </span>
+
+      <!-- Block image and score on the right -->
+      <span style="
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+      ">
+        <img src="assets/blocks/cropped_image_1.png" alt="block" style="height: 20px; width: 20px;">
+        <span style="font-weight: 500;">${data.blocks}</span>
+      </span>
+    </div>
+  `;
+});
+
+document.getElementById('welcomeScores').innerHTML = parts.join('');
+document.getElementById('welcomeOverlay').style.display = 'flex';
+
+document.getElementById('welcomeCloseButton').onclick = () => {
+  document.getElementById('welcomeOverlay').style.display = 'none';
+};
 
 const savedDifficulty = localStorage.getItem("selectedDifficulty") || "medium";
 document.querySelectorAll('.difficulty').forEach(s => {
@@ -397,6 +532,8 @@ function reset() {
   document.getElementById('timer').textContent = timeLeft;
   document.getElementById('feedback').textContent = '';
   document.getElementById('answer').value = '';
+  document.getElementById("question-box").classList.remove("game-over");
+
 
   
   generateQuestion();
@@ -412,10 +549,13 @@ function reset() {
 // load, setstage, start timer
 loadProgress();
 reset();
+document.getElementById("question-box").style.display = 'none';
+
 draw();
 
 document.getElementById('welcomeCloseButton').addEventListener('click', function(){
   startTimer();
+  document.getElementById("question-box").style.display = 'block';
   document.getElementById('answer').focus();
 });
 

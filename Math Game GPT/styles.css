@@ -1,20 +1,28 @@
 
-body {
+html, body {
   margin: 0;
-  overflow: hidden;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    /* stops all scroll */
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
 }
 canvas {
+  position: fixed;
   display: block;
   background: linear-gradient(#87ceeb, #87ceeb);
 }
 
 .back-button { /*Overrides the back button template in root directory*/
+  position: fixed;
+}
+
+.ui {
   position: absolute;
 }
 
-#ui {
-  position: absolute;
+#question-box {
+  position: fixed;
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
@@ -22,6 +30,14 @@ canvas {
   padding: 1em;
   border-radius: 8px;
   text-align: center;
+  z-index: 1;
+}
+
+#question-box.game-over {
+  opacity: 0.3;
+  pointer-events: none;
+  /* Optional: prevents user from clicking or typing */
+  filter: grayscale(100%);
 }
 
 #question {
@@ -56,45 +72,47 @@ input {
   font-size: 1rem;
   padding: 5px;
 }
-
-.game-over-overlay {
+/* /////// SHARED UI OVERLAY /////// */
+.overlay {
   position: fixed;
-  top: 0;
+  top: 180px;
+  /* just below #question */
   left: 0;
   width: 100%;
-  height: 100%;
-  display: none;
+  /* prevent overflow */
+  display: flex;
   justify-content: center;
   align-items: center;
+  /* allows internal scroll if content overflows */
   z-index: 1000;
+  overflow-y: auto;
 }
 
-.game-over-content,
-#welcomeBox {
-  background: rgba(255, 255, 255, 0.8); /* semi-transparent */
-  padding: 1.5em;
+.overlay-box {
+  background: rgba(255, 255, 255, 0.8);
+  padding-right: 1.5em;
+  padding-left: 1.5em;
+  padding-bottom: 1em;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* match #ui */
-  max-width: 90%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  width: 220px;
   font-size: 1.2rem;
 }
 
-.game-over-content h2,
-#welcomeBox h1 {
+.overlay-box h1,
+.overlay-box h2 {
   font-size: 2rem;
-  margin-bottom: 1rem;
-  color: rgb(9, 2, 70); /* consistent heading color */
-}
-
-.game-over-content p,
-#welcomeBox p {
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
   color: rgb(9, 2, 70);
 }
 
-#restartButton, #welcomeCloseButton {
+.overlay-box p {
+  font-size: 1.1rem;
+  color: rgb(9, 2, 70);
+  font-weight: bold;
+}
+
+.overlay-box button {
   padding: 10px 20px;
   font-size: 18px;
   background-color: #28a745;
@@ -104,18 +122,203 @@ input {
   cursor: pointer;
 }
 
-#restartButton:hover, #welcomeCloseButton{
+.overlay-box button:hover {
   background-color: #218838;
 }
 
-#welcomeOverlay {
-  position: fixed;
+/* //////////////////////// SHINE /////////////////// */
+
+.level-box {
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  background: #222;
+  font-size: 24px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.level-box.shine::before {
+  content: '';
+  position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: -75%;
+  width: 50%;
   height: 100%;
+  background: linear-gradient(120deg, 
+  rgba(255, 255, 255, 0.1) 0%, 
+  rgb(255, 255, 255) 50%, 
+  rgba(255, 255, 255, 0.1) 100%);
+  transform: skewX(-30deg);
+  animation: shineAnim 1s ease forwards;
+}
+
+@keyframes shineAnim {
+  0% {
+    left: -75%;
+  }
+
+  100% {
+    left: 125%;
+  }
+}
+
+/* ////////////////////////////// SLIDE UP ANIMATION //////////////////////////// */
+
+/* Slide-up animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+/* XP Bar styles */
+#xpBarContainer {
+  width: 100%;
+  height: 20px;
+  background: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#xpBarFill {
+  height: 100%;
+  width: 0%;
+  background: #4caf50;
+  transition: width 1.2s ease-in-out;
+  border-radius: 10px 0 0 10px;
+}
+
+#xpText {
+  margin-bottom: 1em;
+  font-size: 1rem;
+  color: #333;
+}
+
+
+/* /////////////////// COINS ////////////////// */
+
+.coin-counter {
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+#coinAnimationArea {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  /* center contents (counter + coins) */
   align-items: center;
-  z-index: 1000;
+  max-height: 140px;
+  overflow-y: auto;
+  /* prevent super wide layout */
+  margin: 20px auto;
+  margin-top: 5px;
+  border-radius: 12px;
+  /* soft shadow */
+  text-align: center;
+  scroll-behavior: smooth;
+  flex-basis: 100%;
+  /* pushes it to a new row if needed */
+ /* Hide scrollbar (Chrome, Safari, Edge) */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+}
+
+#coinAnimationArea::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari */
+}
+
+
+#coinAnimationArea span {
+  display: inline-block;
+  font-size: 1.6rem;
+}
+
+
+
+.coin-bounce {
+  display: inline-block;
+  animation: bounceIn 0.3s ease;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+/* ////////////////// MULTIPLIER ///////////////////// */
+
+#multiplier-popup {
+  position: relative;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  padding: 15px;
+  background: #111;
+  border: 3px solid #ff3caa;
+  border-radius: 20px;
+  color: #ffebfb;
+  font-size: 1.3rem;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  box-shadow: 0 0 20px #ff3caa99;
+  z-index: 9999;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+#multiplier-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
+  animation: popBounce 0.5s ease-out forwards;
+}
+
+@keyframes popBounce {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+
+  80% {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.hidden {
+  display: none;
 }

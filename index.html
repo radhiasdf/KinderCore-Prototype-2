@@ -34,13 +34,19 @@
   </div>
 
   <header>Kindercore</header>
+    <div id="globalCoinCounter">
+      <span id="totalCoins">Loading...</span> 🪙
+      </div>
+
+      <script type="module" src="coin.js"></script>
+
 
   <!-- ///////////////////////////////// SCREEN TIME //////////////////////////// -->
 
   <div class="container">
     <section>
       <div class="app-item">
-        <h2>Screen Time Controls (On Progress)</h2>
+        <h2>Screen Time Controls (Display Only)</h2>
         <button class="btn" onclick="openControls()">Manage Limits</button>
       </div>
       
@@ -82,12 +88,7 @@
 
       <div class="game-item">
         <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="icons/spellingbeeicon.png" a
-            
-            
-            
-            
-            lt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
+            <img src="icons/spellingbeeicon.png" alt="Spelling" style="width: 2cm; height: 2cm; border-radius: 8px;">
             <div>
             <strong>Spelling Bee</strong>
             <div class="score" id="bestSpelling">⭐Your Best: --</div>
@@ -115,17 +116,28 @@
 
   </div>
 
+  <!-- Manage Limits Popup -->
+  <div id="progressPopup" class="popup-overlay hidden">
+    <div class="popup-box">
+      <h2>👷🏗️ On Progress 🚧👷‍♀️</h2>
+      <p>This feature is currently under development.</p>
+      <button class="btn" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+
+
   <iframe src="./survey.html" style="width: 100%; height: 800px; border:none;"></iframe>
   <!-- <div class="container">
     <a href="survey.html" class="btn-leaderboards">Give Feedback on Website</a>
   </div> -->
 
 
-
   <script>
-    //////////////////////////////// NEW USER SETUP ///////////////////////////////////////////
+    ////////////////////// GLOBAL STATE ////////////////////////////
 
     let age = 4;
+
+    ////////////////////// USER SETUP ////////////////////////////
 
     function changeAge(delta) {
       age = Math.max(0, Math.min(150, age + delta));
@@ -137,32 +149,53 @@
       document.getElementById("setupModal").classList.add("hidden");
     }
 
+    ////////////////////// CONTROLS POPUP ////////////////////////////
+
     function openControls() {
-        window.location.href = "Manage Screen Time/popup.html"; 
+      document.getElementById("progressPopup").classList.remove("hidden");
+    }
+
+    function closePopup() {
+      document.getElementById("progressPopup").classList.add("hidden");
+    }
+
+    ////////////////////// GAME START FUNCTIONS W/ LOADING EMOJI ////////////////////////////
+
+    function showLoadingAndRedirect(button, url, emoji = "⏳ Loading...") {
+      if (button.disabled) return;
+      button.disabled = true;
+      button.innerText = emoji;
+      setTimeout(() => {
+        window.location.href = url;
+      }, 50); // short delay so user sees feedback even on fast devices
     }
 
     function startArithmeticGame() {
-      window.location.href = "Math Game GPT/math-game.html";
+      const btn = event.target;
+      showLoadingAndRedirect(btn, "Math Game GPT/math-game.html", "🔢 Loading...");
     }
 
     function startSpellingGame() {
-      window.location.href = "Spelling Bee/spelling-bee-game.html";
+      const btn = event.target;
+      showLoadingAndRedirect(btn, "Spelling Bee/spelling-bee-game.html", "🐝 Loading...");
     }
 
-    function startArabicSpellingGame(){
-      window.location.href = "Spelling Bee/spelling-bee-arabic.html";
+    function startArabicSpellingGame() {
+      const btn = event.target;
+      showLoadingAndRedirect(btn, "Spelling Bee/spelling-bee-arabic.html", "🕌 Loading...");
     }
+
+    ////////////////////// ON PAGE LOAD ////////////////////////////
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Only show setup on first visit
-      const pinSet = localStorage.getItem("parentPIN");
-      if (pinSet) {
+      const ageSet = localStorage.getItem("childAge");
+      if (ageSet !== null) {
         document.getElementById("setupModal").classList.add("hidden");
       }
 
+      // Arithmetic Scores
       const bestMath = JSON.parse(localStorage.getItem("mathTowerScores") || '{}');
-      
-      if (bestMath) {
+      if (Object.keys(bestMath).length > 0) {
         const entries = Object.entries(bestMath);
         const parts = entries.map(([difficulty, data]) =>
           `${difficulty[0].toUpperCase() + difficulty.slice(1)}: ${data.blocks}`
@@ -170,6 +203,7 @@
         document.getElementById("bestArithmetic").innerHTML = `⭐Your Best:<br> ${parts.join('<br>')}`;
       }
 
+      // Spelling Scores
       const bestSpelling = localStorage.getItem("bestSpelling");
       if (bestSpelling) {
         document.getElementById("bestSpelling").innerText = `⭐Your Best: ${bestSpelling}`;
@@ -181,5 +215,10 @@
       }
     });
   </script>
+  
+
+<script type="module" src="coin.js"></script>
+
+  
 </body>
 </html>
