@@ -214,6 +214,18 @@
         document.getElementById("bestSpellingArabic").innerText = `⭐Your Best: ${bestSpellingArabic}`;
       }
     });
+
+    window.addEventListener('pageshow', () => {
+        document.querySelectorAll('button').forEach(btn => {
+          if (btn.disabled) {
+            btn.disabled = false;
+            // Reset only if text suggests it's a loading state
+            if (/loading/i.test(btn.innerText.replace(/[^\w\s]/g, ''))) {
+              btn.innerText = 'Play';
+            }
+          }
+        });
+      });
   </script>
   
 
