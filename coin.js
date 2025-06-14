@@ -25,7 +25,7 @@ function getStoredCoins() {
   }
   
   // Public function to add coins
-  function addCoins(num) {
+  export function addCoins(num) {
     const total = getStoredCoins() + num;
     localStorage.setItem("totalCoins", total);
     updateGlobalCoinDisplay();

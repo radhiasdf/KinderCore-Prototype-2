@@ -1,6 +1,8 @@
 import { CloudManager } from './cloud.js';
 import { Firework } from './fireworks.js';
 import { createSoundPool } from '../../utils/soundManager.js';
+import { addCoins } from '../../coin.js'; // adjust the path as needed
+
 
 
 const canvas = document.getElementById('gameCanvas');
@@ -417,7 +419,7 @@ function startTimer() {
 
       let addedCoins = (solved) * mult;
 
-      window.addCoins(addedCoins);
+      addCoins(addedCoins);
 
       const gameOverOverlay = document.getElementById('gameOverOverlay');
       gameOverOverlay.style.display = 'flex';
