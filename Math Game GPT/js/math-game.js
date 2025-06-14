@@ -1,7 +1,7 @@
 import { CloudManager } from './cloud.js';
 import { Firework } from './fireworks.js';
 import { createSoundPool } from '../../utils/soundManager.js';
-import { addCoins } from '../../coin.js'; // adjust the path as needed
+import { addCoins } from '/coin.js'; // adjust the path as needed
 
 
 

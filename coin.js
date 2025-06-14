@@ -31,6 +31,8 @@ function getStoredCoins() {
     updateGlobalCoinDisplay();
     animateCoinIcon();
   }
+
+  window.addCoins = addCoins;
   
   // Function to animate coin reward popup (like level reward)
   export function animateCoinCount(numCoins) {
